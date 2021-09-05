@@ -19,7 +19,7 @@ import 'widgets/windows/window_frame.dart';
 part 'layers/decoration_layer.dart';
 part 'layers/navigation_layer.dart';
 part 'layers/window_layer.dart';
-part 'properties/navigation_rail_buttons.dart';
+part 'properties/default_navigation_rail_buttons.dart';
 part 'widgets/windows/single_window_interface.dart';
 
 void _func() {}

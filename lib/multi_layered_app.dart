@@ -19,6 +19,7 @@ class MultiLayeredApp extends StatefulWidget {
   final Widget Function(Widget child)? decorationLayerBuilder;
   final ThemeData? theme;
   final ThemeData? darkTheme;
+  final ThemeMode themeMode;
 
   MultiLayeredApp(
       {Key? key,
@@ -26,7 +27,8 @@ class MultiLayeredApp extends StatefulWidget {
       this.navigationLayerBuilder,
       this.decorationLayerBuilder,
       this.theme,
-      this.darkTheme})
+      this.darkTheme,
+      this.themeMode = ThemeMode.system})
       : super(key: key);
 
   @override
@@ -38,7 +40,8 @@ class MultiLayeredApp extends StatefulWidget {
                 children: [child, LicenseInformationBottomBar()],
               ),
       theme ?? ThemeData.light(),
-      darkTheme ?? ThemeData.dark());
+      darkTheme ?? ThemeData.dark(),
+      this.themeMode);
 }
 
 class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
@@ -47,21 +50,25 @@ class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
   final Widget Function(Widget child) decorationLayerBuilder;
   final ThemeData theme;
   final ThemeData darkTheme;
+  final ThemeMode themeMode;
 
   _MultiLayeredAppAppState(this.initProcess, this.navigationLayerBuilder,
-      this.decorationLayerBuilder, this.theme, this.darkTheme);
+      this.decorationLayerBuilder, this.theme, this.darkTheme, this.themeMode);
 
   String title = '';
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      //using Provider, don't need to add handler to constructors of all descendants
-      create: (context) => PathHandler(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (context) => PathHandler()),
+        ChangeNotifierProvider(create: (context) => PathHandler()),
+      ],
       child: MaterialApp.router(
         theme: theme,
         darkTheme: darkTheme,
         title: title,
+        themeMode: themeMode,
         routerDelegate: RouterDelegateInherit(),
         routeInformationParser: RouteInformationParserInherit(),
         builder: (context, Widget? child) {
