@@ -1,6 +1,6 @@
-# utilities
+# display_layer_framework
 
-A utilities package.
+A package is a layer management framework base on universal_router.
 
 ## Getting Started
 
