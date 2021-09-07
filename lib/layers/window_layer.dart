@@ -1,6 +1,7 @@
 part of "../framework.dart";
 
 WindowContainer windowContainer = WindowContainer();
+final windowLayerLogger = Logger(printer: CustomLogPrinter('WindowLayer'));
 
 /// [WindowLayer] is the top layer which is use for managing the widget which
 /// implemented [SingleWindowInterfaceMixin] mixin class.
@@ -28,16 +29,14 @@ class InstanceLayer extends StatefulWidget {
 }
 
 class _InstanceLayerState extends State<InstanceLayer> {
-  final logger = Logger(printer: CustomLogPrinter('WindowLayer'));
-
   List<Widget> instances = [];
   Map<String, SingleWindowInterface> instanceCache = {};
 
   updateInstances() {
     setState(() {
       instances = windowContainer.instanceBuilders.map((e) {
-        logger.d("generating instance: " + e.id.toString());
-        logger.d("position: [" +
+        windowLayerLogger.d("generating instance: " + e.id.toString());
+        windowLayerLogger.d("position: [" +
             e.position.dx.toString() +
             ',' +
             e.position.dy.toString() +
@@ -65,7 +64,8 @@ class _InstanceLayerState extends State<InstanceLayer> {
 
   @override
   Widget build(BuildContext context) {
-    logger.i("list: [" + instances.map((e) => e.hashCode).join(',') + ']');
+    windowLayerLogger
+        .i("list: [" + instances.map((e) => e.hashCode).join(',') + ']');
     return Stack(
       children: instances,
     );
@@ -94,7 +94,7 @@ class WindowContainer {
   List<String> getWindowIdList() => instanceBuilders.map((e) => e.id).toList();
 
   closeWindow(String id) {
-    log("Removing window: " + id.toString(), name: "window_layer");
+    windowLayerLogger.d("Removing window: " + id.toString());
     instanceBuilders.removeWhere((e) => e.id == id);
     currentState?.updateInstances();
   }
@@ -102,25 +102,25 @@ class WindowContainer {
   openWindow(InstanceBuilder instanceBuilder) {
     final id = new Uuid().v1();
     instanceBuilder.id = id;
-    log("Opened window: " + id, name: "window_layer");
+    windowLayerLogger.d("Opened window: " + id);
 
     instanceBuilders.add(instanceBuilder);
     currentState?.updateInstances();
-    log("List of windows: [" + getWindowIdList().join(',') + ']',
-        name: "window_layer");
-    log("Length of windows: [" + getWindowIdList().length.toString() + ']',
-        name: "window_layer");
+    windowLayerLogger
+        .v("List of windows: [" + getWindowIdList().join(',') + ']');
+    windowLayerLogger
+        .v("Length of windows: [" + getWindowIdList().length.toString() + ']');
   }
 
   // TODO: _windowMode unfinished
   @protected
   activatingWindow(String id) {
-    log('Activating window: $id', name: "window_layer");
-    log("List of windows: [" + getWindowIdList().join(',') + ']',
-        name: "window_layer");
+    windowLayerLogger.d('Activating window: $id');
+    windowLayerLogger
+        .v("List of windows: [" + getWindowIdList().join(',') + ']');
 
     final index = instanceBuilders.indexWhere((e) => e.id == id);
-    log("updated index: $index", name: "WindowLayerState");
+    windowLayerLogger.d("updated index: $index");
 
     if (index != -1 &&
         index < instanceBuilders.length &&
@@ -135,7 +135,7 @@ class WindowContainer {
   }
 
   updatePosition(String id, Offset offset) {
-    log('updatePosition: $id', name: "window_layer");
+    windowLayerLogger.d('updatePosition: $id');
 
     final builder = instanceBuilders.firstWhere((element) => element.id == id);
     builder.position = offset;
