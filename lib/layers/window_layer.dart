@@ -1,7 +1,10 @@
 part of "../framework.dart";
 
-WindowContainer windowContainer = WindowContainer();
+final WindowsContainer windowsContainer = WindowsContainer();
 final windowLayerLogger = Logger(printer: CustomLogPrinter('WindowLayer'));
+
+final unknown = SingleWindowInterface.buildWithSingleWindowInterface(
+    new Uuid().v1(), UnknownScreen());
 
 /// [WindowLayer] is the top layer which is use for managing the widget which
 /// implemented [SingleWindowInterfaceMixin] mixin class.
@@ -29,12 +32,24 @@ class InstanceLayer extends StatefulWidget {
 }
 
 class _InstanceLayerState extends State<InstanceLayer> {
-  List<Widget> instances = [];
+  List<Positioned> instances = [];
   Map<String, SingleWindowInterface> instanceCache = {};
 
   updateInstances() {
     setState(() {
-      instances = windowContainer.instanceBuilders.map((e) {
+      instances.clear();
+      for (var index = 0;
+          index < windowsContainer.instanceBuilders.length;
+          index++) {
+        final e = windowsContainer.instanceBuilders[index];
+
+        final singleWindowInterface = instanceCache[e.id] ??
+            () {
+              instanceCache[e.id] = e.windowBuilder(e.id);
+
+              return instanceCache[e.id]!;
+            }();
+
         windowLayerLogger.d("generating instance: " + e.id.toString());
         windowLayerLogger.d("position: [" +
             e.position.dx.toString() +
@@ -42,23 +57,31 @@ class _InstanceLayerState extends State<InstanceLayer> {
             e.position.dy.toString() +
             "]");
 
-        /// TODO: Issue impacting: the last excited instance doesn't update the state of active;
-        return Positioned(
+        instances.add(Positioned(
             left: e.position.dx,
             top: e.position.dy,
-            child: instanceCache[e.id] ??
-                () {
-                  instanceCache[e.id] = e.windowBuilder(e.id);
-                  return instanceCache[e.id]!;
-                }());
-      }).toList();
+            child: windowsContainer.windows.length < index + 1
+                ? () {
+                    final window = new Window(
+                        singleWindowInterface: singleWindowInterface);
+                    windowsContainer.windows.add(window);
+                    return windowsContainer.windows.last ??
+                        new Window(singleWindowInterface: unknown);
+                  }()
+                : () {
+                    windowsContainer.windowStates[index]
+                        ?.refresh(singleWindowInterface);
+                    return windowsContainer.windows[index] ??
+                        new Window(singleWindowInterface: unknown);
+                  }()));
+      }
     });
   }
 
   @override
   void initState() {
     updateInstances();
-    windowContainer.currentState = this;
+    windowsContainer.currentState = this;
     super.initState();
   }
 
@@ -83,13 +106,14 @@ class InstanceBuilder {
 ///
 /// Problem: hasn't have the correct order when closing the windows;
 ///
-class WindowContainer {
+class WindowsContainer {
   List<InstanceBuilder> instanceBuilders = [];
+  List<WindowState?> windowStates = [];
+  List<Window?> windows = [];
 
   _InstanceLayerState? currentState;
 
-  bool isActive(WindowFrame windowFrame) =>
-      instanceBuilders.last.id == windowFrame.id;
+  bool isActive(String id) => instanceBuilders.last.id == id;
 
   List<String> getWindowIdList() => instanceBuilders.map((e) => e.id).toList();
 
@@ -113,7 +137,6 @@ class WindowContainer {
   }
 
   // TODO: _windowMode unfinished
-  @protected
   activatingWindow(String id) {
     windowLayerLogger.d('Activating window: $id');
     windowLayerLogger
@@ -128,10 +151,8 @@ class WindowContainer {
       final _ib = instanceBuilders[index];
       instanceBuilders[index] = instanceBuilders.last;
       instanceBuilders[instanceBuilders.length - 1] = _ib;
-      currentState?.updateInstances();
     }
-
-    // if (_windowMode is WindowFrame) (_windowMode as WindowFrame);
+    currentState?.updateInstances();
   }
 
   updatePosition(String id, Offset offset) {

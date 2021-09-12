@@ -52,14 +52,14 @@ final defaultFloatingActionButtons = (context,
               onPressed: () {
                 switchContactButtonState();
 
-                windowContainer.openWindow(InstanceBuilder(
+                windowsContainer.openWindow(InstanceBuilder(
                     windowBuilder: (id) =>
                         SingleWindowInterface.buildWithSingleWindowInterface(
                           id,
                           Container(
                             color: Colors.blue.withRed(Random().nextInt(255)),
                             child: Text('[' +
-                                windowContainer.getWindowIdList().join(',') +
+                                windowsContainer.getWindowIdList().join(',') +
                                 ']'),
                           ),
                         )));

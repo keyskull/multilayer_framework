@@ -1,10 +1,12 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:utilities/custom_log_printer.dart';
 import 'package:utilities/screen_size.dart';
 
 import '../../framework.dart';
+
+final logger = Logger(printer: CustomLogPrinter('WindowFrame'));
 
 final boxConstraints = BoxConstraints(
     minHeight: 200,
@@ -19,7 +21,9 @@ abstract class WindowFrame extends StatelessWidget {
   final String id;
   final Offset? position;
 
-  WindowFrame(this.child, this.id, {this.position});
+  WindowFrame(this.child, this.id, {this.position}) {
+    if (position != null) windowsContainer.updatePosition(id, position!);
+  }
 
   WindowWidget frameDecorationBuilder(
       BuildContext context,
@@ -27,15 +31,15 @@ abstract class WindowFrame extends StatelessWidget {
       String id,
       Widget closeButton,
       Widget minimizeButton,
-      Widget maximizeButton);
+      Widget maximizeButton,
+      bool activated);
 
   @override
   Widget build(BuildContext context) {
-    if (position != null) windowContainer.updatePosition(id, position!);
     final Widget closeButton = ElevatedButton(
         onPressed: () {
-          log('closing window: $id}');
-          windowContainer.closeWindow(id);
+          windowLayerLogger.d('closing window: $id}');
+          windowsContainer.closeWindow(id);
         },
         child: Icon(Icons.close));
 
@@ -45,15 +49,13 @@ abstract class WindowFrame extends StatelessWidget {
     final Widget maximizeButton =
         ElevatedButton(onPressed: () {}, child: Icon(Icons.add));
     final frameDecoration = frameDecorationBuilder(
-        context, child, id, closeButton, minimizeButton, maximizeButton);
-
-    final builtTitle = Container(
-        constraints: BoxConstraints.expand(height: 30),
-        child: frameDecoration.windowBar);
-    final builtContent = Padding(
-        padding: EdgeInsets.only(top: 30),
-        child: Container(
-            constraints: boxConstraints, child: frameDecoration.content));
+        context,
+        child,
+        id,
+        closeButton,
+        minimizeButton,
+        maximizeButton,
+        windowsContainer.isActive(id));
 
     builtChild(Stack contain) => PointerInterceptor(
         child: DefaultTextStyle(
@@ -67,36 +69,35 @@ abstract class WindowFrame extends StatelessWidget {
       maxSimultaneousDrags: 1,
       feedback: builtChild(
         Stack(children: [
-          builtTitle,
-          builtContent,
+          frameDecoration.windowBar,
+          frameDecoration.content,
           PointerInterceptor(
               child: Container(
                   constraints: boxConstraints, color: Colors.transparent))
         ]),
       ),
       onDragEnd: (details) {
-        windowContainer.updatePosition(id, details.offset);
-        windowContainer.activatingWindow(id);
+        windowsContainer.updatePosition(id, details.offset);
       },
       childWhenDragging: Container(),
-      child: builtChild(windowContainer.isActive(this)
+      child: builtChild(windowsContainer.isActive(id)
           ? Stack(
-              children: [builtTitle, builtContent],
+              children: [frameDecoration.windowBar, frameDecoration.content],
             )
           : Stack(
               children: [
-                builtTitle,
-                builtContent,
+                frameDecoration.windowBar,
+                frameDecoration.content,
                 PointerInterceptor(
-                    child: Container(
-                  constraints: boxConstraints,
-                  color: Colors.transparent,
-                  child: SizedBox.expand(
-                    child: MaterialButton(
-                      onPressed: () => windowContainer.activatingWindow(id),
-                    ),
+                  child: Container(
+                    constraints: boxConstraints,
+                    color: Colors.transparent,
+                    child: SizedBox.expand(child: MaterialButton(onPressed: () {
+                      windowsContainer.activatingWindow(id);
+                      // activated = true;
+                    })),
                   ),
-                ))
+                )
               ],
             )),
       rootOverlay: true,
@@ -106,11 +107,17 @@ abstract class WindowFrame extends StatelessWidget {
 }
 
 class WindowWidget {
-  final Widget windowBar;
-  final Widget content;
+  late final Widget windowBar;
+  late final Widget content;
 
   WindowWidget({
-    required this.windowBar,
-    required this.content,
-  });
+    required windowBar,
+    required content,
+  }) {
+    this.windowBar = Container(
+        constraints: BoxConstraints.expand(height: 30), child: windowBar);
+    this.content = Padding(
+        padding: EdgeInsets.only(top: 30),
+        child: Container(constraints: boxConstraints, child: content));
+  }
 }

@@ -2,6 +2,8 @@ part of '../../framework.dart';
 
 enum ScreenMode { window, fullScreen, onlyFullScreen }
 
+final logger = Logger(printer: CustomLogPrinter('SingleWindowInterface'));
+
 class SingleWindowInterface extends StatelessWidget {
   final Widget child;
 

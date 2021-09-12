@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 
-import '../../framework.dart';
 import 'window_frame.dart';
 
 class DefaultWindowFrame extends WindowFrame {
   DefaultWindowFrame(Widget child, String id) : super(child, id);
 
   @override
-  WindowWidget frameDecorationBuilder(
-          context, child, id, closeButton, minimizeButton, maximizeButton) =>
+  WindowWidget frameDecorationBuilder(context, child, id, closeButton,
+          minimizeButton, maximizeButton, activated) =>
       WindowWidget(
           windowBar: Container(
-              color: windowContainer.isActive(this)
-                  ? Colors.blue
-                  : Colors.lightBlueAccent,
+              color: activated
+                  ? Theme.of(context).primaryColor
+                  : Theme.of(context).secondaryHeaderColor,
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
