@@ -58,6 +58,14 @@ class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
   String title = '';
 
   @override
+  void initState() {
+    WidgetsBinding.instance!.endOfFrame.then(
+      (_) => afterFirstLayout(context),
+    );
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
@@ -107,7 +115,6 @@ class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
     );
   }
 
-  @override
   void afterFirstLayout(BuildContext context) {
     setState(() {
       title = S.current.title;
