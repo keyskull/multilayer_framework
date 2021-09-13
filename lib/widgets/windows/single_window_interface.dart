@@ -2,7 +2,8 @@ part of '../../framework.dart';
 
 enum ScreenMode { window, fullScreen, onlyFullScreen }
 
-final logger = Logger(printer: CustomLogPrinter('SingleWindowInterface'));
+final singleWindowInterfaceLogger =
+    Logger(printer: CustomLogPrinter('SingleWindowInterface'));
 
 class SingleWindowInterface extends StatelessWidget {
   final Widget child;
@@ -25,8 +26,9 @@ mixin SingleWindowInterfaceMixin on Widget {
   late ScreenMode _screenMode = ScreenMode.onlyFullScreen;
   late String _id = "Unknown Instance";
 
+  /// TODO: UniversalSingleChildScrollView have been crash in Flutter 2.5.0, need update
   Widget _scrollview(Widget child) =>
-      scrollable() ? UniversalSingleChildScrollView(child: child) : child;
+      scrollable() ? SingleChildScrollView(child: child) : child;
 
   Widget _framework(Widget child) {
     switch (_screenMode) {

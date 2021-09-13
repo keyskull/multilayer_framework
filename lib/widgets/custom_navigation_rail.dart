@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:localization/generated/l10n.dart';
+import 'package:logger/logger.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:provider/provider.dart';
 import 'package:universal_router/route.dart';
+import 'package:utilities/custom_log_printer.dart';
 import 'package:utilities/screen_size.dart';
 
 import '../framework.dart';
@@ -31,6 +33,7 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
   final Widget child;
   final NavigationRailButtons navigationRailButtons;
   final int defaultIndex;
+  final logger = Logger(printer: CustomLogPrinter('CustomNavigationRail'));
 
   CustomNavigationRailState(
       this.child, this.navigationRailButtons, this.defaultIndex);
@@ -158,6 +161,7 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
                                 extended: _extend,
                                 selectedIndex: _selectedIndex,
                                 onDestinationSelected: (int index) {
+                                  logger.d('onDestinationSelected');
                                   setState(() {
                                     final key = (((globalNavigatorKey
                                                 .currentState!

@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'widgets/windows/window_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:localization/generated/l10n.dart';
@@ -8,7 +7,6 @@ import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:universal_router/pages/404.dart';
 import 'package:universal_router/route.dart';
-import 'package:universal_scroll_view/universal_single_child_scroll_view.dart';
 import 'package:utilities/custom_log_printer.dart';
 import 'package:utilities/screen_size.dart';
 import 'package:uuid/uuid.dart';
@@ -17,6 +15,7 @@ import 'widgets/custom_navigation_rail.dart';
 import 'widgets/floating_action_button.dart';
 import 'widgets/windows/default_window_frame.dart';
 import 'widgets/windows/window_frame.dart';
+import 'widgets/windows/window_state.dart';
 
 part 'layers/decoration_layer.dart';
 part 'layers/navigation_layer.dart';

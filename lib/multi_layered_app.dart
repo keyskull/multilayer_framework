@@ -1,11 +1,11 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/generated/l10n.dart';
+import 'package:logger/logger.dart';
 import 'package:provider/provider.dart';
 import 'package:universal_router/init_router_base.dart';
 import 'package:universal_router/route.dart';
+import 'package:utilities/custom_log_printer.dart';
 import 'package:utilities/screen_size.dart';
 
 import 'framework.dart';
@@ -51,6 +51,7 @@ class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
   final ThemeData theme;
   final ThemeData darkTheme;
   final ThemeMode themeMode;
+  final logger = Logger(printer: CustomLogPrinter('MultiLayeredApp'));
 
   _MultiLayeredAppAppState(this.initProcess, this.navigationLayerBuilder,
       this.decorationLayerBuilder, this.theme, this.darkTheme, this.themeMode);
@@ -67,11 +68,8 @@ class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (context) => PathHandler()),
-        ChangeNotifierProvider(create: (context) => PathHandler()),
-      ],
+    return ChangeNotifierProvider(
+      create: (context) => PathHandler(),
       child: MaterialApp.router(
         theme: theme,
         darkTheme: darkTheme,
@@ -80,18 +78,17 @@ class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
         routerDelegate: RouterDelegateInherit(),
         routeInformationParser: RouteInformationParserInherit(),
         builder: (context, Widget? child) {
-          ScreenSize.initScreenSize(context);
-          this.initProcess(context);
-          final unknown =
-              (InitRouterBase.unknownPage.getPage() as MaterialPage).child;
-          log("${child.runtimeType.toString()}");
-
           return Overlay(
             initialEntries: [
               OverlayEntry(
                   maintainState: true,
-                  builder: (context) => decorationLayerBuilder(
-                      navigationLayerBuilder(child ?? unknown))),
+                  builder: (context) {
+                    ScreenSize.initScreenSize(context);
+                    this.initProcess(context);
+                    logger.d('Started initial process.');
+                    return decorationLayerBuilder(navigationLayerBuilder(
+                        child ?? InitRouterBase.unknownPage.getPage().child));
+                  }),
             ],
           );
         },
