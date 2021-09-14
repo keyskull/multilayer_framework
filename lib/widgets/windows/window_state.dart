@@ -8,19 +8,15 @@ class Window extends StatefulWidget {
   Window({this.singleWindowInterface});
 
   @override
-  WindowState createState() => WindowState(singleWindowInterface ?? unknown);
+  WindowState createState() => WindowState();
 }
 
 class WindowState extends State<Window> {
-  SingleWindowInterface singleWindowInterface;
-
-  WindowState(this.singleWindowInterface);
+  SingleWindowInterface singleWindowInterface = unknown;
 
   Function() afterFirstLayoutFunction = () {};
 
   refresh(SingleWindowInterface singleWindowInterface) {
-    if (singleWindowInterface == this.singleWindowInterface) {}
-
     final function = () => setState(() {
           if (singleWindowInterface == this.singleWindowInterface)
             this.singleWindowInterface =
@@ -33,6 +29,8 @@ class WindowState extends State<Window> {
 
   @override
   void initState() {
+    if (widget.singleWindowInterface != null)
+      this.singleWindowInterface = widget.singleWindowInterface!;
     windowsContainer.windowStates.add(this);
     WidgetsBinding.instance!.endOfFrame.then(
       (_) => afterFirstLayout(context),
@@ -41,7 +39,7 @@ class WindowState extends State<Window> {
   }
 
   @override
-  Widget build(BuildContext context) => singleWindowInterface;
+  Widget build(BuildContext context) => this.singleWindowInterface;
 
   @override
   void dispose() {

@@ -23,20 +23,13 @@ class CustomNavigationRail extends StatefulWidget {
       : super(key: key);
 
   @override
-  CustomNavigationRailState createState() =>
-      CustomNavigationRailState(child, navigationRailButtons, defaultIndex);
+  CustomNavigationRailState createState() => CustomNavigationRailState();
 }
 
 /// This is the private State class that goes with MyStatefulWidget.
 class CustomNavigationRailState extends State<CustomNavigationRail>
     with SingleTickerProviderStateMixin {
-  final Widget child;
-  final NavigationRailButtons navigationRailButtons;
-  final int defaultIndex;
   final logger = Logger(printer: CustomLogPrinter('CustomNavigationRail'));
-
-  CustomNavigationRailState(
-      this.child, this.navigationRailButtons, this.defaultIndex);
 
   late AnimationController _controller;
 
@@ -71,7 +64,7 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
 
   @override
   void initState() {
-    _selectedIndex = defaultIndex;
+    _selectedIndex = widget.defaultIndex;
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -140,7 +133,7 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
         color: Colors.white,
         child: Stack(
           children: <Widget>[
-            PositionedTransition(rect: _animationContent, child: child),
+            PositionedTransition(rect: _animationContent, child: widget.child),
             PositionedTransition(
                 rect: _animationNavigationRail,
                 child: Row(
@@ -173,11 +166,12 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
                                         .path
                                         .substring(1);
                                     if (key !=
-                                        navigationRailButtons
+                                        widget.navigationRailButtons
                                             .buttonPaths[index]) {
                                       Provider.of<PathHandler>(context,
                                               listen: false)
-                                          .changePath(navigationRailButtons
+                                          .changePath(widget
+                                              .navigationRailButtons
                                               .buttonPaths[index]);
                                     }
                                     _selectedIndex = index;
@@ -207,13 +201,16 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
                                   ],
                                 ),
                                 destinations: new List.generate(
-                                    navigationRailButtons.buttonNames.length,
+                                    widget.navigationRailButtons.buttonNames
+                                        .length,
                                     (index) => NavigationRailDestination(
-                                          icon: navigationRailButtons
+                                          icon: widget.navigationRailButtons
                                               .buttonIcons[index],
-                                          selectedIcon: navigationRailButtons
+                                          selectedIcon: widget
+                                              .navigationRailButtons
                                               .buttonSelectedIcons[index],
-                                          label: Text(navigationRailButtons
+                                          label: Text(widget
+                                              .navigationRailButtons
                                               .buttonNames[index]),
                                         ))),
                           ),

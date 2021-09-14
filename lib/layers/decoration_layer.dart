@@ -11,17 +11,11 @@ class DecorationLayer extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<StatefulWidget> createState() =>
-      DecorationLayerState(child, decorations);
+  State<StatefulWidget> createState() => DecorationLayerState();
 }
 
 class DecorationLayerState extends State<DecorationLayer>
     with TickerProviderStateMixin {
-  final Widget child;
-  List<Widget> decorations;
-
-  DecorationLayerState(this.child, this.decorations);
-
   var _appBarHeight = appBarHeight;
 
   @override
@@ -38,12 +32,12 @@ class DecorationLayerState extends State<DecorationLayer>
     return Scaffold(
       appBar: _appBarBuilder(_appBarHeight, context),
       body: Stack(alignment: Alignment.topCenter, children: [
-        _notificationListener((child is SingleWindowInterfaceMixin)
-            ? ((child as SingleWindowInterfaceMixin)
+        _notificationListener((widget.child is SingleWindowInterfaceMixin)
+            ? ((widget.child as SingleWindowInterfaceMixin)
                   ..setScreenMode(ScreenMode.onlyFullScreen))
                 .buildSingleWindowInterface()
-            : child),
-        ...decorations
+            : widget.child),
+        ...widget.decorations
       ]),
     );
   }

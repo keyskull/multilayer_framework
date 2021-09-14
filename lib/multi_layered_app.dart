@@ -32,29 +32,11 @@ class MultiLayeredApp extends StatefulWidget {
       : super(key: key);
 
   @override
-  _MultiLayeredAppAppState createState() => _MultiLayeredAppAppState(
-      initProcess,
-      navigationLayerBuilder ?? defaultNavigationLayer,
-      decorationLayerBuilder ??
-          (child) => Stack(
-                children: [child, LicenseInformationBottomBar()],
-              ),
-      theme ?? ThemeData.light(),
-      darkTheme ?? ThemeData.dark(),
-      this.themeMode);
+  _MultiLayeredAppAppState createState() => _MultiLayeredAppAppState();
 }
 
 class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
-  final void Function(BuildContext context) initProcess;
-  final Widget Function(Widget child) navigationLayerBuilder;
-  final Widget Function(Widget child) decorationLayerBuilder;
-  final ThemeData theme;
-  final ThemeData darkTheme;
-  final ThemeMode themeMode;
   final logger = Logger(printer: CustomLogPrinter('MultiLayeredApp'));
-
-  _MultiLayeredAppAppState(this.initProcess, this.navigationLayerBuilder,
-      this.decorationLayerBuilder, this.theme, this.darkTheme, this.themeMode);
 
   String title = '';
 
@@ -68,18 +50,26 @@ class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
 
   @override
   Widget build(BuildContext context) {
+    final Widget Function(Widget child) navigationLayerBuilder =
+        widget.navigationLayerBuilder ?? defaultNavigationLayer;
+    final Widget Function(Widget child) decorationLayerBuilder =
+        widget.decorationLayerBuilder ??
+            (child) => Stack(
+                  children: [child, LicenseInformationBottomBar()],
+                );
+
     return ChangeNotifierProvider(
       create: (context) => PathHandler(),
       child: MaterialApp.router(
-        theme: theme,
-        darkTheme: darkTheme,
+        theme: widget.theme ?? ThemeData.light(),
+        darkTheme: widget.darkTheme ?? ThemeData.dark(),
         title: title,
-        themeMode: themeMode,
+        themeMode: widget.themeMode,
         routerDelegate: RouterDelegateInherit(),
         routeInformationParser: RouteInformationParserInherit(),
         builder: (context, Widget? child) {
           ScreenSize.initScreenSize(context);
-          this.initProcess(context);
+          widget.initProcess(context);
           logger.d('Started initial process.');
           return Overlay(
             initialEntries: [
