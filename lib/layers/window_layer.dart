@@ -62,17 +62,17 @@ class _InstanceLayerState extends State<InstanceLayer> {
             top: e.position.dy,
             child: windowsContainer.windows.length < index + 1
                 ? () {
-                    final window = new Window(
-                        singleWindowInterface: singleWindowInterface);
+                    final window =
+                        Window(singleWindowInterface: singleWindowInterface);
                     windowsContainer.windows.add(window);
-                    return windowsContainer.windows.last ??
-                        new Window(singleWindowInterface: unknown);
+                    return windowsContainer.windows[index] ??
+                        Window(singleWindowInterface: unknown);
                   }()
                 : () {
                     windowsContainer.windowStates[index]
                         ?.refresh(singleWindowInterface);
                     return windowsContainer.windows[index] ??
-                        new Window(singleWindowInterface: unknown);
+                        Window(singleWindowInterface: unknown);
                   }()));
       }
     });
@@ -87,8 +87,11 @@ class _InstanceLayerState extends State<InstanceLayer> {
 
   @override
   Widget build(BuildContext context) {
-    windowLayerLogger
-        .i("list: [" + instances.map((e) => e.hashCode).join(',') + ']');
+    windowLayerLogger.i("list: [" +
+        instances
+            .map((e) => (e.child as Window).singleWindowInterface.hashCode)
+            .join(',') +
+        ']');
     return Stack(
       children: instances,
     );

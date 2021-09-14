@@ -78,14 +78,14 @@ class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
         routerDelegate: RouterDelegateInherit(),
         routeInformationParser: RouteInformationParserInherit(),
         builder: (context, Widget? child) {
+          ScreenSize.initScreenSize(context);
+          this.initProcess(context);
+          logger.d('Started initial process.');
           return Overlay(
             initialEntries: [
               OverlayEntry(
                   maintainState: true,
                   builder: (context) {
-                    ScreenSize.initScreenSize(context);
-                    this.initProcess(context);
-                    logger.d('Started initial process.');
                     return decorationLayerBuilder(navigationLayerBuilder(
                         child ?? InitRouterBase.unknownPage.getPage().child));
                   }),
