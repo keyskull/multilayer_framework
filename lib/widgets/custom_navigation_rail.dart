@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:localization/generated/l10n.dart';
 import 'package:logger/logger.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:provider/provider.dart';
 import 'package:universal_router/route.dart';
 import 'package:utilities/custom_log_printer.dart';
 import 'package:utilities/screen_size.dart';
@@ -168,9 +167,8 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
                                     if (key !=
                                         widget.navigationRailButtons
                                             .buttonPaths[index]) {
-                                      Provider.of<PathHandler>(context,
-                                              listen: false)
-                                          .changePath(widget
+                                      globalNavigatorKey.currentState!
+                                          .pushNamed(widget
                                               .navigationRailButtons
                                               .buttonPaths[index]);
                                     }
