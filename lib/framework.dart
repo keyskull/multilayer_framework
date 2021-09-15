@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:localization/generated/l10n.dart';
 import 'package:logger/logger.dart';
-import 'package:provider/provider.dart';
 import 'package:universal_router/pages/404.dart';
 import 'package:universal_router/route.dart';
 import 'package:utilities/custom_log_printer.dart';
@@ -78,9 +77,7 @@ final defaultAppBarBuilder = (double appBarHeight, BuildContext context) =>
         actions: _actionButtonList +
             [
               ActionButtonWidget(
-                  onPressed: () =>
-                      Provider.of<PathHandler>(context, listen: false)
-                          .changePath("about-me"),
+                  onPressed: () => UniversalRouter.changePath("about-me"),
                   text: 'About Me')
             ]);
 
