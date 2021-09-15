@@ -7,18 +7,17 @@ import 'package:utilities/custom_log_printer.dart';
 import 'package:utilities/screen_size.dart';
 
 import '../framework.dart';
+import '../multi_layered_app.dart';
 
 /// This is the stateful widget that the main application instantiates.
 class CustomNavigationRail extends StatefulWidget {
   final Widget child;
   final NavigationRailButtons navigationRailButtons;
-  final int defaultIndex;
 
   CustomNavigationRail(
       {required Key key,
       required this.child,
-      required this.navigationRailButtons,
-      this.defaultIndex = 0})
+      required this.navigationRailButtons})
       : super(key: key);
 
   @override
@@ -63,13 +62,15 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
 
   @override
   void initState() {
-    _selectedIndex = widget.defaultIndex;
+    logger.d("initState executed.");
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
     );
     // controller.forward();
-
+    WidgetsBinding.instance!.endOfFrame.then(
+      (_) => afterFirstLayout(context),
+    );
     super.initState();
   }
 
@@ -155,15 +156,11 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
                                 onDestinationSelected: (int index) {
                                   logger.d('onDestinationSelected');
                                   setState(() {
-                                    final key = (((globalNavigatorKey
-                                                .currentState!
-                                                .widget
-                                                .pages
-                                                .first
-                                                .key as ValueKey)
-                                            .value) as RouteData)
-                                        .path
-                                        .substring(1);
+                                    final key = MultiLayeredApp.universalRouter
+                                        .currentConfiguration.routeName;
+                                    // final key = '';
+                                    logger.i("key: $key");
+
                                     if (key !=
                                         widget.navigationRailButtons
                                             .buttonPaths[index]) {
@@ -221,25 +218,11 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
         ));
   }
 
-// @override
-// void afterFirstLayout(BuildContext context) {
-//   globalNotificationListeners[this.hashCode.toString()] =
-//       (scrollNotification) {
-//     if (scrollNotification is ScrollUpdateNotification) {
-//       final distance = (scrollNotification.scrollDelta ?? 0);
-//       log('ScrollUpdateNotification: ' + distance.toString(),
-//           name: 'ml.numflurry.custom_navigation_rail');
-//       if (distance > 0)
-//         this.setState(() {
-//           final counted = _appBarHeight - distance;
-//           _appBarHeight = counted >= 0 ? counted : 0;
-//         });
-//       else
-//         this.setState(() {
-//           _appBarHeight = AppBarHeight;
-//         });
-//     }
-//     return true;
-//   };
-// }
+  void afterFirstLayout(BuildContext context) {
+    setState(() {
+      final checkedIndex = widget.navigationRailButtons.buttonPaths.indexOf(
+          MultiLayeredApp.universalRouter.currentConfiguration.routeName);
+      _selectedIndex = checkedIndex > 0 ? checkedIndex : 0;
+    });
+  }
 }

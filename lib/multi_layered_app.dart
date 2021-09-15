@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/generated/l10n.dart';
 import 'package:logger/logger.dart';
-import 'package:provider/provider.dart';
 import 'package:universal_router/init_router_base.dart';
 import 'package:universal_router/route.dart';
 import 'package:utilities/custom_log_printer.dart';
@@ -20,6 +19,7 @@ class MultiLayeredApp extends StatefulWidget {
   final ThemeData? theme;
   final ThemeData? darkTheme;
   final ThemeMode themeMode;
+  static final universalRouter = UniversalRouter();
 
   MultiLayeredApp(
       {Key? key,
@@ -57,48 +57,47 @@ class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
             (child) => Stack(
                   children: [child, LicenseInformationBottomBar()],
                 );
-
-    return ChangeNotifierProvider(
-      create: (context) => PathHandler(),
-      child: MaterialApp.router(
-        theme: widget.theme ?? ThemeData.light(),
-        darkTheme: widget.darkTheme ?? ThemeData.dark(),
-        title: title,
-        themeMode: widget.themeMode,
-        routerDelegate: RouterDelegateInherit(),
-        routeInformationParser: RouteInformationParserInherit(),
-        builder: (context, Widget? child) {
-          ScreenSize.initScreenSize(context);
-          widget.initProcess(context);
-          logger.d('Started initial process.');
-          return Overlay(
-            initialEntries: [
-              OverlayEntry(
-                  maintainState: true,
-                  builder: (context) {
-                    return decorationLayerBuilder(navigationLayerBuilder(
-                        child ?? InitRouterBase.unknownPage.getPage().child));
-                  }),
-            ],
-          );
-        },
-        localizationsDelegates: [
-          S.delegate,
-          GlobalMaterialLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-        ],
-        supportedLocales: S.delegate.supportedLocales,
-        localeResolutionCallback: (locale, supportedLocales) {
-          for (var supportedLocale in supportedLocales) {
-            if (supportedLocale.languageCode == locale!.languageCode &&
-                supportedLocale.countryCode == locale.countryCode) {
-              return supportedLocale;
-            }
+    return MaterialApp.router(
+      theme: widget.theme ?? ThemeData.light(),
+      darkTheme: widget.darkTheme ?? ThemeData.dark(),
+      title: title,
+      themeMode: widget.themeMode,
+      routerDelegate: MultiLayeredApp.universalRouter.routerDelegate,
+      routeInformationProvider:
+          MultiLayeredApp.universalRouter.routeInformationProvider,
+      routeInformationParser:
+          MultiLayeredApp.universalRouter.routerInformationParser,
+      builder: (context, Widget? child) {
+        ScreenSize.initScreenSize(context);
+        widget.initProcess(context);
+        logger.d('Started initial process.');
+        return Overlay(
+          initialEntries: [
+            OverlayEntry(
+                maintainState: true,
+                builder: (context) {
+                  return decorationLayerBuilder(navigationLayerBuilder(
+                      child ?? InitRouterBase.unknownPage.getPage().child));
+                }),
+          ],
+        );
+      },
+      localizationsDelegates: [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: S.delegate.supportedLocales,
+      localeResolutionCallback: (locale, supportedLocales) {
+        for (var supportedLocale in supportedLocales) {
+          if (supportedLocale.languageCode == locale!.languageCode &&
+              supportedLocale.countryCode == locale.countryCode) {
+            return supportedLocale;
           }
-          return supportedLocales.first;
-        },
-      ),
+        }
+        return supportedLocales.first;
+      },
     );
   }
 

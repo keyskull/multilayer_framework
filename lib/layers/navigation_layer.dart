@@ -3,14 +3,9 @@ part of '../framework.dart';
 class NavigationLayer extends StatefulWidget {
   final Widget child;
   final GlobalKey<CustomNavigationRailState> navigationRailKey = GlobalKey();
-  final int defaultNavigationSelectedIndex;
   final NavigationRailButtons? navigationRailButtons;
 
-  NavigationLayer(
-      {Key? key,
-      required this.child,
-      this.defaultNavigationSelectedIndex = 0,
-      this.navigationRailButtons})
+  NavigationLayer({Key? key, required this.child, this.navigationRailButtons})
       : super(key: key);
 
   @override
@@ -55,7 +50,6 @@ class NavigationLayerState extends State<NavigationLayer>
       child: widget.child,
       navigationRailButtons:
           widget.navigationRailButtons ?? defaultNavigationRailButtons,
-      defaultIndex: widget.defaultNavigationSelectedIndex,
     );
 
     return Scaffold(
