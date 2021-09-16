@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/generated/l10n.dart';
 import 'package:logger/logger.dart';
-import 'package:universal_router/init_router_base.dart';
 import 'package:universal_router/route.dart';
 
 import 'framework.dart';
@@ -19,7 +18,7 @@ class MultiLayeredApp extends StatelessWidget {
   final ThemeData? theme;
   final ThemeData? darkTheme;
   final ThemeMode themeMode;
-  static final universalRouter = UniversalRouter();
+  static final universalRouter = UniversalRouter.initialize();
 
   MultiLayeredApp(
       {Key? key,
@@ -61,7 +60,7 @@ class MultiLayeredApp extends StatelessWidget {
                 maintainState: true,
                 builder: (context) {
                   return decorationLayerBuilder(navigationLayerBuilder(
-                      child ?? InitRouterBase.unknownPage.getPage().child));
+                      child ?? UniversalRouter.unknownPage.getPage().child));
                 }),
           ],
         );
