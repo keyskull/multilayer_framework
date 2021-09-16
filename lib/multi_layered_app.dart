@@ -12,7 +12,7 @@ import 'widgets/bottom/bar/license_information_bottom_bar.dart';
 
 void _func(BuildContext context) {}
 
-class MultiLayeredApp extends StatefulWidget {
+class MultiLayeredApp extends StatelessWidget {
   final void Function(BuildContext context) initProcess;
   final Widget Function(Widget child)? navigationLayerBuilder;
   final Widget Function(Widget child)? decorationLayerBuilder;
@@ -31,37 +31,21 @@ class MultiLayeredApp extends StatefulWidget {
       this.themeMode = ThemeMode.system})
       : super(key: key);
 
-  @override
-  _MultiLayeredAppAppState createState() => _MultiLayeredAppAppState();
-}
-
-class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
   final logger = Logger(printer: CustomLogPrinter('MultiLayeredApp'));
-
-  String title = '';
-
-  @override
-  void initState() {
-    WidgetsBinding.instance!.endOfFrame.then(
-      (_) => afterFirstLayout(context),
-    );
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
     final Widget Function(Widget child) navigationLayerBuilder =
-        widget.navigationLayerBuilder ?? defaultNavigationLayer;
+        this.navigationLayerBuilder ?? defaultNavigationLayer;
     final Widget Function(Widget child) decorationLayerBuilder =
-        widget.decorationLayerBuilder ??
+        this.decorationLayerBuilder ??
             (child) => Stack(
                   children: [child, LicenseInformationBottomBar()],
                 );
     return MaterialApp.router(
-      theme: widget.theme ?? ThemeData.light(),
-      darkTheme: widget.darkTheme ?? ThemeData.dark(),
-      title: title,
-      themeMode: widget.themeMode,
+      theme: theme ?? ThemeData.light(),
+      darkTheme: darkTheme ?? ThemeData.dark(),
+      themeMode: themeMode,
       routerDelegate: MultiLayeredApp.universalRouter.routerDelegate,
       routeInformationProvider:
           MultiLayeredApp.universalRouter.routeInformationProvider,
@@ -69,7 +53,7 @@ class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
           MultiLayeredApp.universalRouter.routerInformationParser,
       builder: (context, Widget? child) {
         ScreenSize.initScreenSize(context);
-        widget.initProcess(context);
+        initProcess(context);
         logger.d('Started initial process.');
         return Overlay(
           initialEntries: [
@@ -99,11 +83,5 @@ class _MultiLayeredAppAppState extends State<MultiLayeredApp> {
         return supportedLocales.first;
       },
     );
-  }
-
-  void afterFirstLayout(BuildContext context) {
-    setState(() {
-      title = S.current.title;
-    });
   }
 }

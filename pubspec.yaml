@@ -18,12 +18,12 @@ dependencies:
     path: ../localization
 
 
-  cullen_utilities: 0.1.0
+  cullen_utilities:
 
   markdown_editor:
     path: ../markdown_editor
 
-  universal_scroll_view: ^1.0.4
+  universal_scroll_view:
   provider: ^5.0.0
   pointer_interceptor: ^0.9.0+1
   url_launcher: ^6.0.4
