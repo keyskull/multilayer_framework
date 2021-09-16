@@ -18,9 +18,7 @@ dependencies:
     path: ../localization
 
 
-  utilities:
-    git:
-      url: https://github.com/keyskull/utilities.git
+  cullen_utilities: 0.1.0
 
   markdown_editor:
     path: ../markdown_editor

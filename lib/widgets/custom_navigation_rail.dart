@@ -1,10 +1,10 @@
+import 'package:cullen_utilities/custom_log_printer.dart';
+import 'package:cullen_utilities/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:localization/generated/l10n.dart';
 import 'package:logger/logger.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:universal_router/route.dart';
-import 'package:utilities/custom_log_printer.dart';
-import 'package:utilities/screen_size.dart';
 
 import '../framework.dart';
 import '../multi_layered_app.dart';
