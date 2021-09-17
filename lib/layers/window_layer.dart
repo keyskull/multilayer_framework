@@ -8,30 +8,17 @@ final unknown = SingleWindowInterface.buildWithSingleWindowInterface(
 
 /// [WindowLayer] is the top layer which is use for managing the widget which
 /// implemented [SingleWindowInterfaceMixin] mixin class.
-class WindowLayer extends StatelessWidget {
-  final Widget child;
-
-  WindowLayer({Key? key, required this.child}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [child, InstanceLayer()],
-    );
-  }
-}
 
 ///
 /// When the windows queue update the state also need to update.
-class InstanceLayer extends StatefulWidget {
-  InstanceLayer({Key? key}) : super(key: key);
+class WindowLayer extends StatefulWidget {
+  WindowLayer({Key? key}) : super(key: key);
 
   @override
-  _InstanceLayerState createState() => _InstanceLayerState();
+  _WindowLayerState createState() => _WindowLayerState();
 }
 
-class _InstanceLayerState extends State<InstanceLayer> {
+class _WindowLayerState extends State<WindowLayer> {
   List<Positioned> instances = [];
   Map<String, SingleWindowInterface> instanceCache = {};
 
@@ -114,7 +101,7 @@ class WindowsContainer {
   List<WindowState?> windowStates = [];
   List<Window?> windows = [];
 
-  _InstanceLayerState? currentState;
+  _WindowLayerState? currentState;
 
   bool isActive(String id) => instanceBuilders.last.id == id;
 

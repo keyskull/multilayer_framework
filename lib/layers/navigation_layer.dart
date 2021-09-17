@@ -55,12 +55,11 @@ class NavigationLayerState extends State<NavigationLayer>
     return Scaffold(
         // key: scaffoldKey,
         backgroundColor: Colors.black87,
-        body: WindowLayer(
-            child: RawMaterialButton(
-                mouseCursor: SystemMouseCursors.basic,
-                onPressed: () =>
-                    widget.navigationRailKey.currentState?..closeRail(),
-                child: customNavigationRail)),
+        body: RawMaterialButton(
+            mouseCursor: SystemMouseCursors.basic,
+            onPressed: () =>
+                widget.navigationRailKey.currentState?..closeRail(),
+            child: customNavigationRail),
         // floatingActionButtonAnimator: ,
         floatingActionButton: defaultFloatingActionButtons(
           context,

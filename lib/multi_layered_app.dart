@@ -38,7 +38,7 @@ class MultiLayeredApp extends StatelessWidget {
         this.navigationLayerBuilder ?? defaultNavigationLayer;
     final Widget Function(Widget child) decorationLayerBuilder =
         this.decorationLayerBuilder ??
-            (child) => Stack(
+            (Widget child) => Stack(
                   children: [child, LicenseInformationBottomBar()],
                 );
     return MaterialApp.router(
@@ -54,14 +54,16 @@ class MultiLayeredApp extends StatelessWidget {
         ScreenSize.initScreenSize(context);
         initProcess(context);
         logger.d('Started initial process.');
-        return Overlay(
-          initialEntries: [
-            OverlayEntry(
-                maintainState: true,
-                builder: (context) {
-                  return decorationLayerBuilder(navigationLayerBuilder(
-                      child ?? UniversalRouter.unknownPage.getPage().child));
-                }),
+        return Stack(
+          children: [
+            navigationLayerBuilder(decorationLayerBuilder(
+                child ?? UniversalRouter.unknownPage.getPage().child)),
+            Overlay(
+              initialEntries: [
+                OverlayEntry(
+                    maintainState: true, builder: (context) => WindowLayer())
+              ],
+            ),
           ],
         );
       },

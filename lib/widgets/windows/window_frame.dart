@@ -65,42 +65,37 @@ abstract class WindowFrame extends StatelessWidget {
                 decoration: boxDecoration,
                 child: contain)));
 
+    final List<Widget> contentWidget = [
+      frameDecoration.windowBar,
+      frameDecoration.content
+    ];
+
+    final inactiveWidget = Stack(
+        children: contentWidget +
+            [
+              PointerInterceptor(
+                child: Container(
+                  constraints: boxConstraints,
+                  color: Colors.transparent,
+                  child: SizedBox.expand(child: MaterialButton(onPressed: () {
+                    windowsContainer.activatingWindow(id);
+                    // activated = true;
+                  })),
+                ),
+              )
+            ]);
+
     final dragWidget = Draggable(
       maxSimultaneousDrags: 1,
-      feedback: builtChild(
-        Stack(children: [
-          frameDecoration.windowBar,
-          frameDecoration.content,
-          PointerInterceptor(
-              child: Container(
-                  constraints: boxConstraints, color: Colors.transparent))
-        ]),
-      ),
+      feedback: builtChild(inactiveWidget),
       onDragEnd: (details) {
         windowsContainer.updatePosition(id, details.offset);
       },
       childWhenDragging: Container(),
       child: builtChild(windowsContainer.isActive(id)
-          ? Stack(
-              children: [frameDecoration.windowBar, frameDecoration.content],
-            )
-          : Stack(
-              children: [
-                frameDecoration.windowBar,
-                frameDecoration.content,
-                PointerInterceptor(
-                  child: Container(
-                    constraints: boxConstraints,
-                    color: Colors.transparent,
-                    child: SizedBox.expand(child: MaterialButton(onPressed: () {
-                      windowsContainer.activatingWindow(id);
-                      // activated = true;
-                    })),
-                  ),
-                )
-              ],
-            )),
-      rootOverlay: true,
+          ? Stack(children: contentWidget)
+          : inactiveWidget),
+      // rootOverlay: true,
     );
     return dragWidget;
   }
