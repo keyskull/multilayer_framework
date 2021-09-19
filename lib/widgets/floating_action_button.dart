@@ -1,7 +1,8 @@
+import 'dart:math';
+
 import 'package:cullen_utilities/screen_size.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:markdown_editor/markdown_editor.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -54,14 +55,15 @@ final defaultFloatingActionButtons = (context,
                 windowsContainer.openWindow(InstanceBuilder(
                     windowBuilder: (id) =>
                         SingleWindowInterface.buildWithSingleWindowInterface(
-                            id, MarkdownEditor()
-                            // Container(
-                            //   color: Colors.blue.withRed(Random().nextInt(255)),
-                            //   child: Text('[' +
-                            //       windowsContainer.getWindowIdList().join(',') +
-                            //       ']'),
-                            // ),
-                            )));
+                          id,
+                          // MarkdownEditor()
+                          Container(
+                            color: Colors.blue.withRed(Random().nextInt(255)),
+                            child: Text('[' +
+                                windowsContainer.getWindowIdList().join(',') +
+                                ']'),
+                          ),
+                        )));
               },
               child: contactButtonExtended
                   ? Icon(Icons.message)
