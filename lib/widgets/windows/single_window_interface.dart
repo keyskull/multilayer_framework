@@ -22,16 +22,23 @@ class SingleWindowInterface extends StatelessWidget {
           .buildSingleWindowInterface();
 }
 
+class WindowPattern {
+  ScreenMode screenMode;
+  String id;
+  WindowPattern(
+      {this.id = 'Unknown Instance',
+      this.screenMode = ScreenMode.onlyFullScreen});
+}
+
 mixin SingleWindowInterfaceMixin on Widget {
-  late ScreenMode _screenMode = ScreenMode.onlyFullScreen;
-  late String _id = "Unknown Instance";
+  final WindowPattern windowPattern = WindowPattern();
 
   /// TODO: UniversalSingleChildScrollView have been crash in Flutter 2.5.0, need update
   Widget _scrollview(Widget child) =>
       scrollable() ? SingleChildScrollView(child: child) : child;
 
   Widget _framework(Widget child) {
-    switch (_screenMode) {
+    switch (windowPattern.screenMode) {
       case ScreenMode.onlyFullScreen:
         return _scrollview(child);
       case ScreenMode.window:
@@ -44,7 +51,7 @@ mixin SingleWindowInterfaceMixin on Widget {
   }
 
   @protected
-  String getId() => _id;
+  String getId() => windowPattern.id;
 
   bool scrollable();
 
@@ -53,7 +60,8 @@ mixin SingleWindowInterfaceMixin on Widget {
   WindowFrame windowFrameBuilder(Widget child) =>
       DefaultWindowFrame(child, getId());
 
-  void setScreenMode(ScreenMode screenMode) => _screenMode = screenMode;
+  void setScreenMode(ScreenMode screenMode) =>
+      windowPattern.screenMode = screenMode;
 
   @protected
   SingleWindowInterface buildSingleWindowInterface() {
@@ -71,7 +79,7 @@ class _InstanceSingleWindowInterface extends StatelessWidget
 
   _InstanceSingleWindowInterface(this.id, this.child,
       {this.isScrollable = false, this.screenMode = ScreenMode.window}) {
-    this._id = id;
+    this.windowPattern.id = id;
   }
 
   @override
