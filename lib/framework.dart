@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cullen_utilities/custom_log_printer.dart';
 import 'package:cullen_utilities/screen_size.dart';
+import 'package:display_layer_framework/multi_layered_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:localization/generated/l10n.dart';
@@ -52,20 +53,16 @@ class ActionButtonWidget extends StatelessWidget {
 
 List<ActionButtonWidget> _actionButtonList = [];
 
-final defaultAppBarBuilder = (double appBarHeight, BuildContext context) =>
-    AppBar(
+final defaultAppBarBuilder =
+    (double appBarHeight, BuildContext context) => AppBar(
         toolbarHeight: appBarHeight,
-        backwardsCompatibility: true,
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: Container(
             margin: const EdgeInsets.only(left: 20.0),
-            child: ((globalNavigatorKey.currentState?.widget.pages.first.key
-                            as ValueKey)
-                        .value as RouteData)
-                    .isRoot()
+            child: (UniversalRouter.getCurrentRouteData()?.isRoot() ?? true)
                 ? const Image(image: AssetImage("images/logo.png"))
                 : BackButton(
-                    onPressed: () => globalNavigatorKey.currentState?.pop(),
+                    onPressed: () => UniversalRouter.pop(),
                   )),
         elevation: 2,
         titleSpacing: 5.0,

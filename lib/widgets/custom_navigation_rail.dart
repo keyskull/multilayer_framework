@@ -164,10 +164,9 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
                                     if (key !=
                                         widget.navigationRailButtons
                                             .buttonPaths[index]) {
-                                      globalNavigatorKey.currentState!
-                                          .pushNamed(widget
-                                              .navigationRailButtons
-                                              .buttonPaths[index]);
+                                      UniversalRouter.changePath(widget
+                                          .navigationRailButtons
+                                          .buttonPaths[index]);
                                     }
                                     _selectedIndex = index;
                                   });
