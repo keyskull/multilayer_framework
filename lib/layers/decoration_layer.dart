@@ -16,7 +16,10 @@ class DecorationLayer extends StatefulWidget {
 
 class DecorationLayerState extends State<DecorationLayer>
     with TickerProviderStateMixin {
+  final logger = Logger(printer: CustomLogPrinter('RouterDelegateInherit'));
+
   var _appBarHeight = appBarHeight;
+  AppBar? appBar;
 
   @override
   void initState() {
@@ -24,13 +27,20 @@ class DecorationLayerState extends State<DecorationLayer>
     WidgetsBinding.instance!.endOfFrame.then(
       (_) => afterFirstLayout(context),
     );
+    MultiLayeredApp.universalRouter.routerDelegate.addListener(() {
+      setState(() {
+        logger.i('router listener run.');
+        this.appBar = _appBarBuilder(_appBarHeight, context);
+      });
+    });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    this.appBar = _appBarBuilder(_appBarHeight, context);
     return Scaffold(
-      appBar: _appBarBuilder(_appBarHeight, context),
+      appBar: this.appBar,
       body: Stack(alignment: Alignment.topCenter, children: [
         _notificationListener((widget.child is SingleWindowInterfaceMixin)
             ? ((widget.child as SingleWindowInterfaceMixin)
@@ -50,7 +60,7 @@ class DecorationLayerState extends State<DecorationLayer>
       },
       child: child);
 
-  _registerNotificationListener() {
+  _registerScrollNotificationListener() {
     globalNotificationListeners[this.hashCode.toString()] =
         (scrollNotification) {
       if (scrollNotification is ScrollUpdateNotification) {
@@ -87,14 +97,14 @@ class DecorationLayerState extends State<DecorationLayer>
   }
 
   void afterFirstLayout(BuildContext context) {
-    _registerNotificationListener();
+    _registerScrollNotificationListener();
   }
 
   @override
   void didUpdateWidget(covariant DecorationLayer oldWidget) {
     globalNotificationListeners.remove(oldWidget.hashCode.toString());
     log('Decoration Layer deleted oldWidget:' + oldWidget.hashCode.toString());
-    _registerNotificationListener();
+    _registerScrollNotificationListener();
     super.didUpdateWidget(oldWidget);
   }
 

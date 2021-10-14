@@ -54,7 +54,7 @@ class ActionButtonWidget extends StatelessWidget {
 List<ActionButtonWidget> _actionButtonList = [];
 
 final defaultAppBarBuilder =
-    (double appBarHeight, BuildContext context) => AppBar(
+    (double appBarHeight, BuildContext context) => new AppBar(
         toolbarHeight: appBarHeight,
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: Container(
