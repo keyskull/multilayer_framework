@@ -157,7 +157,8 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
                                   logger.d('onDestinationSelected');
                                   setState(() {
                                     final key = MultiLayeredApp.universalRouter
-                                        .currentConfiguration.routeName;
+                                        .currentConfiguration.path
+                                        .substring(1);
                                     // final key = '';
                                     logger.i("key: $key");
 
