@@ -91,9 +91,9 @@ class DecorationLayerState extends State<DecorationLayer>
       return true;
     };
     log(
-        "globalNotificationListeners:" +
-            globalNotificationListeners.keys.join(","),
-        name: "globalNotificationListeners");
+        'globalNotificationListeners:' +
+            globalNotificationListeners.keys.join(','),
+        name: 'globalNotificationListeners');
   }
 
   void afterFirstLayout(BuildContext context) {

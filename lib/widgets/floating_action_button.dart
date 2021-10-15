@@ -30,7 +30,7 @@ final defaultFloatingActionButtons = (context,
                 child: hiddenNavigation
                     ? Icon(Icons.arrow_forward_ios_outlined)
                     : Icon(Icons.arrow_back_ios_outlined),
-                heroTag: "hidden",
+                heroTag: 'hidden',
               ))),
           PointerInterceptor(
               child:
@@ -39,12 +39,12 @@ final defaultFloatingActionButtons = (context,
               mini: true,
               onPressed: () {
                 switchContactButtonState();
-                launch("mailto:contact@numflurry.ml");
+                launch('mailto:contact@numflurry.ml');
               },
               child: contactButtonExtended
                   ? Icon(Icons.email)
                   : Icon(Icons.email_outlined),
-              heroTag: "btn2",
+              heroTag: 'btn2',
             ),
             SizedBox(height: 10),
             FloatingActionButton(

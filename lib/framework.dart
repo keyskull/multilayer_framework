@@ -8,7 +8,7 @@ import 'package:flutter/rendering.dart';
 import 'package:localization/generated/l10n.dart';
 import 'package:logger/logger.dart';
 import 'package:universal_router/route.dart';
-import 'package:universal_router/ui/views/screen/404.dart';
+import 'package:universal_router/ui/views/screen/unknown.dart';
 import 'package:uuid/uuid.dart';
 
 import 'widgets/custom_navigation_rail.dart';
@@ -60,7 +60,7 @@ final defaultAppBarBuilder =
         leading: Container(
             margin: const EdgeInsets.only(left: 20.0),
             child: (UniversalRouter.getCurrentRouteData()?.isRoot() ?? true)
-                ? const Image(image: AssetImage("images/logo.png"))
+                ? const Image(image: AssetImage('images/logo.png'))
                 : BackButton(
                     onPressed: () => UniversalRouter.pop(),
                   )),
@@ -74,7 +74,7 @@ final defaultAppBarBuilder =
         actions: _actionButtonList +
             [
               ActionButtonWidget(
-                  onPressed: () => UniversalRouter.changePath("about-me"),
+                  onPressed: () => UniversalRouter.changePath('about-me'),
                   text: 'About Me')
             ]);
 

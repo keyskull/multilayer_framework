@@ -35,7 +35,7 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
   bool _extend = false;
   bool _hidden = false;
   double _width = 83;
-  String path = "";
+  String path = '';
 
   // var _appBarHeight = AppBarHeight;
   // late bool Function(Notification) function;
@@ -62,7 +62,7 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
 
   @override
   void initState() {
-    logger.d("initState executed.");
+    logger.d('initState executed.');
     _controller = AnimationController(
       duration: const Duration(milliseconds: 300),
       vsync: this,
@@ -160,7 +160,7 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
                                         .currentConfiguration.path
                                         .substring(1);
                                     // final key = '';
-                                    logger.i("key: $key");
+                                    logger.i('key: $key');
 
                                     if (key !=
                                         widget.navigationRailButtons
