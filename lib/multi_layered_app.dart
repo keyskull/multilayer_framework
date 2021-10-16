@@ -7,14 +7,13 @@ import 'package:logger/logger.dart';
 import 'package:universal_router/route.dart';
 
 import 'framework.dart';
-import 'widgets/bottom/bar/license_information_bottom_bar.dart';
 
 void _func(BuildContext context) {}
 
 class MultiLayeredApp extends StatelessWidget {
   final void Function(BuildContext context) initProcess;
-  final Widget Function(Widget child)? navigationLayerBuilder;
-  final Widget Function(Widget child)? decorationLayerBuilder;
+  final Widget Function(Widget child, {Key? key})? navigationLayerBuilder;
+  final Widget Function(Widget child, {Key? key})? decorationLayerBuilder;
   final ThemeData? theme;
   final ThemeData? darkTheme;
   final ThemeMode themeMode;
@@ -34,13 +33,10 @@ class MultiLayeredApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Widget Function(Widget child) navigationLayerBuilder =
+    final navigationLayerBuilder =
         this.navigationLayerBuilder ?? defaultNavigationLayer;
-    final Widget Function(Widget child) decorationLayerBuilder =
-        this.decorationLayerBuilder ??
-            (Widget child) => Stack(
-                  children: [child, LicenseInformationBottomBar()],
-                );
+    final decorationLayerBuilder =
+        this.decorationLayerBuilder ?? defaultDecorationLayer;
     return MaterialApp.router(
       theme: theme ?? ThemeData.light(),
       darkTheme: darkTheme ?? ThemeData.dark(),
@@ -54,16 +50,15 @@ class MultiLayeredApp extends StatelessWidget {
         ScreenSize.initScreenSize(context);
         initProcess(context);
         logger.d('Started initial process.');
-        return Stack(
-          children: [
-            navigationLayerBuilder(decorationLayerBuilder(
-                child ?? UniversalRouter.unknownPage.getPage().child)),
-            Overlay(
-              initialEntries: [
-                OverlayEntry(
-                    maintainState: true, builder: (context) => WindowLayer())
-              ],
-            ),
+
+        return Overlay(
+          initialEntries: [
+            OverlayEntry(
+                builder: (context) => navigationLayerBuilder(
+                    decorationLayerBuilder(
+                        child ?? UniversalRouter.unknownPage.getPage().child))),
+            OverlayEntry(
+                maintainState: true, builder: (context) => WindowLayer())
           ],
         );
       },

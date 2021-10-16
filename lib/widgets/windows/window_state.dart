@@ -3,34 +3,34 @@ import 'package:flutter/material.dart';
 import '../../../framework.dart';
 
 class Window extends StatefulWidget {
-  final SingleWindowInterface? singleWindowInterface;
+  final SingleWindowWidget? singleWindowWidget;
 
-  Window({this.singleWindowInterface});
+  Window({this.singleWindowWidget});
 
   @override
   WindowState createState() => WindowState();
 }
 
 class WindowState extends State<Window> {
-  SingleWindowInterface singleWindowInterface = unknown;
+  SingleWindowWidget singleWindowInterface = unknown;
 
   Function() afterFirstLayoutFunction = () {};
 
-  refresh(SingleWindowInterface singleWindowInterface) {
+  refresh(SingleWindowWidget singleWindowWidget) {
     final function = () => setState(() {
-          if (singleWindowInterface == this.singleWindowInterface)
+          if (singleWindowWidget == this.singleWindowInterface)
             this.singleWindowInterface =
-                new SingleWindowInterface(child: singleWindowInterface);
+                SingleWindowInterface(singleWindowWidget);
           else
-            this.singleWindowInterface = singleWindowInterface;
+            this.singleWindowInterface = singleWindowWidget;
         });
     this.mounted ? function() : afterFirstLayoutFunction = function;
   }
 
   @override
   void initState() {
-    if (widget.singleWindowInterface != null)
-      this.singleWindowInterface = widget.singleWindowInterface!;
+    if (widget.singleWindowWidget != null)
+      this.singleWindowInterface = widget.singleWindowWidget!;
     windowsContainer.windowStates.add(this);
     WidgetsBinding.instance!.endOfFrame.then(
       (_) => afterFirstLayout(context),

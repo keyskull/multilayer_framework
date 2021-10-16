@@ -15,7 +15,7 @@ class DecorationLayer extends StatefulWidget {
 }
 
 class DecorationLayerState extends State<DecorationLayer>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   final logger = Logger(printer: CustomLogPrinter('RouterDelegateInherit'));
 
   var _appBarHeight = appBarHeight;
@@ -27,12 +27,12 @@ class DecorationLayerState extends State<DecorationLayer>
     WidgetsBinding.instance!.endOfFrame.then(
       (_) => afterFirstLayout(context),
     );
-    MultiLayeredApp.universalRouter.routerDelegate.addListener(() {
-      setState(() {
-        logger.i('router listener run.');
-        this.appBar = _appBarBuilder(_appBarHeight, context);
-      });
-    });
+    // MultiLayeredApp.universalRouter.routerDelegate.addListener(() {
+    //   setState(() {
+    //     logger.i('router listener run.');
+    //     this.appBar = _appBarBuilder(_appBarHeight, context);
+    //   });
+    // });
     super.initState();
   }
 
@@ -40,13 +40,10 @@ class DecorationLayerState extends State<DecorationLayer>
   Widget build(BuildContext context) {
     this.appBar = _appBarBuilder(_appBarHeight, context);
     return Scaffold(
+      primary: false,
       appBar: this.appBar,
       body: Stack(alignment: Alignment.topCenter, children: [
-        _notificationListener((widget.child is SingleWindowInterfaceMixin)
-            ? ((widget.child as SingleWindowInterfaceMixin)
-                  ..setScreenMode(ScreenMode.onlyFullScreen))
-                .buildSingleWindowInterface()
-            : widget.child),
+        _notificationListener(widget.child),
         ...widget.decorations
       ]),
     );

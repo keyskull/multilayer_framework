@@ -1,8 +1,17 @@
 part of '../framework.dart';
 
+final GlobalKey<CustomNavigationRailState> navigationRailKey = GlobalKey();
+
+Function(BuildContext context,
+        {required Function() switchNavigatorRailState,
+        required Function() switchContactButtonState,
+        required bool hiddenNavigation,
+        required bool contactButtonExtended,
+        Dialog contactButtonDialog}) floatingActionButton =
+    defaultFloatingActionButtons;
+
 class NavigationLayer extends StatefulWidget {
   final Widget child;
-  final GlobalKey<CustomNavigationRailState> navigationRailKey = GlobalKey();
   final NavigationRailButtons? navigationRailButtons;
 
   NavigationLayer({Key? key, required this.child, this.navigationRailButtons})
@@ -13,7 +22,7 @@ class NavigationLayer extends StatefulWidget {
 }
 
 class NavigationLayerState extends State<NavigationLayer>
-    with TickerProviderStateMixin {
+    with SingleTickerProviderStateMixin {
   bool hiddenNavigation = false;
   bool contactButtonExtended = true;
 
@@ -38,15 +47,15 @@ class NavigationLayerState extends State<NavigationLayer>
   _switchNavigatorRailState() {
     setState(() {
       hiddenNavigation = !hiddenNavigation;
-      widget.navigationRailKey.currentState?..extendNavigationRail();
-      widget.navigationRailKey.currentState?..closeRail();
+      navigationRailKey.currentState?..extendNavigationRail();
+      navigationRailKey.currentState?..closeRail();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final customNavigationRail = CustomNavigationRail(
-      key: widget.navigationRailKey,
+      key: navigationRailKey,
       child: widget.child,
       navigationRailButtons:
           widget.navigationRailButtons ?? defaultNavigationRailButtons,
@@ -54,14 +63,13 @@ class NavigationLayerState extends State<NavigationLayer>
 
     return Scaffold(
         // key: scaffoldKey,
-        backgroundColor: Colors.black87,
+        primary: true,
         body: RawMaterialButton(
             mouseCursor: SystemMouseCursors.basic,
-            onPressed: () =>
-                widget.navigationRailKey.currentState?..closeRail(),
+            onPressed: () => navigationRailKey.currentState?.closeRail(),
             child: customNavigationRail),
         // floatingActionButtonAnimator: ,
-        floatingActionButton: defaultFloatingActionButtons(
+        floatingActionButton: floatingActionButton(
           context,
           switchNavigatorRailState: _switchNavigatorRailState,
           switchContactButtonState: _switchContactButtonState,

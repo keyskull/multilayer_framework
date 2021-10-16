@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:cullen_utilities/custom_log_printer.dart';
 import 'package:cullen_utilities/screen_size.dart';
-import 'package:display_layer_framework/multi_layered_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:localization/generated/l10n.dart';
@@ -78,8 +77,15 @@ final defaultAppBarBuilder =
                   text: 'About Me')
             ]);
 
-final Widget Function(Widget child) defaultNavigationLayer =
-    (child) => NavigationLayer(
+final Widget Function(Widget child, {Key? key}) defaultNavigationLayer =
+    (child, {Key? key}) => NavigationLayer(
+          key: key,
+          child: child,
+        );
+
+final Widget Function(Widget child, {Key? key}) defaultDecorationLayer =
+    (child, {Key? key}) => DecorationLayer(
+          key: key,
           child: child,
         );
 

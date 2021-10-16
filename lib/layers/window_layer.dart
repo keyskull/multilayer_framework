@@ -20,7 +20,7 @@ class WindowLayer extends StatefulWidget {
 
 class _WindowLayerState extends State<WindowLayer> {
   List<Positioned> instances = [];
-  Map<String, SingleWindowInterface> instanceCache = {};
+  Map<String, SingleWindowWidget> instanceCache = {};
 
   updateInstances() {
     setState(() {
@@ -30,7 +30,7 @@ class _WindowLayerState extends State<WindowLayer> {
           index++) {
         final e = windowsContainer.instanceBuilders[index];
 
-        final singleWindowInterface = instanceCache[e.id] ??
+        final singleWindowWidget = instanceCache[e.id] ??
             () {
               instanceCache[e.id] = e.windowBuilder(e.id);
 
@@ -50,16 +50,16 @@ class _WindowLayerState extends State<WindowLayer> {
             child: windowsContainer.windows.length < index + 1
                 ? () {
                     final window =
-                        Window(singleWindowInterface: singleWindowInterface);
+                        Window(singleWindowWidget: singleWindowWidget);
                     windowsContainer.windows.add(window);
                     return windowsContainer.windows[index] ??
-                        Window(singleWindowInterface: unknown);
+                        Window(singleWindowWidget: unknown);
                   }()
                 : () {
                     windowsContainer.windowStates[index]
-                        ?.refresh(singleWindowInterface);
+                        ?.refresh(singleWindowWidget);
                     return windowsContainer.windows[index] ??
-                        Window(singleWindowInterface: unknown);
+                        Window(singleWindowWidget: unknown);
                   }()));
       }
     });
@@ -76,7 +76,7 @@ class _WindowLayerState extends State<WindowLayer> {
   Widget build(BuildContext context) {
     windowLayerLogger.i('list: [' +
         instances
-            .map((e) => (e.child as Window).singleWindowInterface.hashCode)
+            .map((e) => (e.child as Window).singleWindowWidget.hashCode)
             .join(',') +
         ']');
     return Stack(
@@ -88,7 +88,7 @@ class _WindowLayerState extends State<WindowLayer> {
 class InstanceBuilder {
   late String id;
   Offset position = new Offset(100, 100);
-  final SingleWindowInterface Function(String id) windowBuilder;
+  final SingleWindowWidget Function(String id) windowBuilder;
 
   InstanceBuilder({required this.windowBuilder});
 }

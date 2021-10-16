@@ -15,9 +15,7 @@ class CustomNavigationRail extends StatefulWidget {
   final NavigationRailButtons navigationRailButtons;
 
   CustomNavigationRail(
-      {required Key key,
-      required this.child,
-      required this.navigationRailButtons})
+      {Key? key, required this.child, required this.navigationRailButtons})
       : super(key: key);
 
   @override
@@ -35,10 +33,6 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
   bool _extend = false;
   bool _hidden = false;
   double _width = 83;
-  String path = '';
-
-  // var _appBarHeight = AppBarHeight;
-  // late bool Function(Notification) function;
 
   _updateState() {
     setState(() {
@@ -128,94 +122,80 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
                 end: __navigationRailRelativeRectFromSize_1)
             .animate(_curveAnimation);
 
-    return AnimatedContainer(
-        duration: Duration(seconds: 1),
-        color: Colors.white,
-        child: Stack(
-          children: <Widget>[
-            PositionedTransition(rect: _animationContent, child: widget.child),
-            PositionedTransition(
-                rect: _animationNavigationRail,
-                child: Row(
-                  children: [
-                    Container(
-                        color: Theme.of(context).colorScheme.primary,
-                        child: PointerInterceptor(
-                          child: NavigationRailTheme(
-                            data: NavigationRailThemeData(
-                                unselectedLabelTextStyle:
-                                    TextStyle(color: Colors.white)),
-                            child: NavigationRail(
-                                unselectedIconTheme:
-                                    IconThemeData(color: Colors.white),
-                                selectedIconTheme:
-                                    IconThemeData(color: Colors.white),
-                                backgroundColor: Colors.black54,
-                                extended: _extend,
-                                selectedIndex: _selectedIndex,
-                                onDestinationSelected: (int index) {
-                                  logger.d('onDestinationSelected');
-                                  setState(() {
-                                    final key = MultiLayeredApp.universalRouter
-                                        .currentConfiguration.path
-                                        .substring(1);
-                                    // final key = '';
-                                    logger.i('key: $key');
+    return Stack(
+      children: <Widget>[
+        PositionedTransition(rect: _animationContent, child: widget.child),
+        PositionedTransition(
+            rect: _animationNavigationRail,
+            child: Row(
+              children: [
+                PointerInterceptor(
+                  child: NavigationRailTheme(
+                    data: NavigationRailThemeData(
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        unselectedLabelTextStyle:
+                            TextStyle(color: Colors.white),
+                        selectedLabelTextStyle: TextStyle(color: Colors.white)),
+                    child: NavigationRail(
+                        unselectedIconTheme: IconThemeData(color: Colors.white),
+                        selectedIconTheme: IconThemeData(color: Colors.white),
+                        extended: _extend,
+                        selectedIndex: _selectedIndex,
+                        onDestinationSelected: (int index) {
+                          logger.d('onDestinationSelected');
+                          setState(() {
+                            final key = MultiLayeredApp
+                                .universalRouter.currentConfiguration.path
+                                .substring(1);
+                            // final key = '';
+                            logger.i('key: $key');
 
-                                    if (key !=
-                                        widget.navigationRailButtons
-                                            .buttonPaths[index]) {
-                                      UniversalRouter.changePath(widget
-                                          .navigationRailButtons
-                                          .buttonPaths[index]);
-                                    }
-                                    _selectedIndex = index;
-                                  });
-                                },
-                                labelType: NavigationRailLabelType.none,
-                                leading: Stack(
-                                  children: [
-                                    Container(
-                                        width: _width,
-                                        height: 30,
-                                        alignment: Alignment(0, 0.2),
-                                        child: SizedBox.expand(
-                                            child: Semantics(
-                                                button: true,
-                                                label: S
-                                                    .of(context)
-                                                    .home_page_name,
-                                                child: IconButton(
-                                                  iconSize: 25,
-                                                  icon: Icon(
-                                                    Icons.dehaze,
-                                                    color: Colors.white,
-                                                  ),
-                                                  onPressed: _updateState,
-                                                )))),
-                                  ],
-                                ),
-                                destinations: new List.generate(
-                                    widget.navigationRailButtons.buttonNames
-                                        .length,
-                                    (index) => NavigationRailDestination(
-                                          icon: widget.navigationRailButtons
-                                              .buttonIcons[index],
-                                          selectedIcon: widget
-                                              .navigationRailButtons
-                                              .buttonSelectedIcons[index],
-                                          label: Text(widget
-                                              .navigationRailButtons
-                                              .buttonNames[index]),
-                                        ))),
-                          ),
-                        )),
-                    VerticalDivider(thickness: 1, width: 1),
-                    // This is the main content.
-                  ],
-                ))
-          ],
-        ));
+                            if (key !=
+                                widget
+                                    .navigationRailButtons.buttonPaths[index]) {
+                              UniversalRouter.changePath(widget
+                                  .navigationRailButtons.buttonPaths[index]);
+                            }
+                            _selectedIndex = index;
+                          });
+                        },
+                        labelType: NavigationRailLabelType.none,
+                        leading: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                              width: _width,
+                              height: 30,
+                              child: SizedBox.expand(
+                                  child: Semantics(
+                                      button: true,
+                                      label: S.of(context).home_page_name,
+                                      child: IconButton(
+                                        iconSize: 25,
+                                        icon: Icon(
+                                          Icons.dehaze,
+                                          color: Colors.white,
+                                        ),
+                                        onPressed: _updateState,
+                                      )))),
+                        ),
+                        destinations: new List.generate(
+                            widget.navigationRailButtons.buttonNames.length,
+                            (index) => NavigationRailDestination(
+                                  icon: widget
+                                      .navigationRailButtons.buttonIcons[index],
+                                  selectedIcon: widget.navigationRailButtons
+                                      .buttonSelectedIcons[index],
+                                  label: Text(widget.navigationRailButtons
+                                      .buttonNames[index]),
+                                ))),
+                  ),
+                ),
+                VerticalDivider(thickness: 1, width: 1),
+                // This is the main content.
+              ],
+            ))
+      ],
+    );
   }
 
   void afterFirstLayout(BuildContext context) {

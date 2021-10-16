@@ -2,43 +2,28 @@ part of '../../framework.dart';
 
 enum ScreenMode { window, fullScreen, onlyFullScreen }
 
+class WindowSetting {
+  ScreenMode screenMode;
+  final String id;
+  void Function(VoidCallback fn) _setState = (VoidCallback fn) {};
+
+  WindowSetting({String? id, ScreenMode? screenMode})
+      : this.id = id ?? 'Unknown Instance',
+        this.screenMode = screenMode ?? ScreenMode.onlyFullScreen;
+}
+
 final singleWindowInterfaceLogger =
     Logger(printer: CustomLogPrinter('SingleWindowInterface'));
 
-class SingleWindowInterface extends StatelessWidget {
-  final Widget child;
-
-  const SingleWindowInterface({Key? key, required this.child})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) => child;
-
-  static SingleWindowInterface buildWithSingleWindowInterface(
-          String id, Widget child,
-          {bool isScrollable = false,
-          ScreenMode screenMode = ScreenMode.window}) =>
-      new _InstanceSingleWindowInterface(id, child)
-          .buildSingleWindowInterface();
-}
-
-class WindowPattern {
-  ScreenMode screenMode;
-  String id;
-  WindowPattern(
-      {this.id = 'Unknown Instance',
-      this.screenMode = ScreenMode.onlyFullScreen});
-}
-
-mixin SingleWindowInterfaceMixin on Widget {
-  final WindowPattern windowPattern = WindowPattern();
+abstract class SingleWindowWidget extends StatefulWidget {
+  final WindowSetting windowSetting;
 
   /// TODO: UniversalSingleChildScrollView have been crash in Flutter 2.5.0, need update
   Widget _scrollview(Widget child) =>
       scrollable() ? SingleChildScrollView(child: child) : child;
 
   Widget _framework(Widget child) {
-    switch (windowPattern.screenMode) {
+    switch (windowSetting.screenMode) {
       case ScreenMode.onlyFullScreen:
         return _scrollview(child);
       case ScreenMode.window:
@@ -50,44 +35,81 @@ mixin SingleWindowInterfaceMixin on Widget {
     }
   }
 
-  @protected
-  String getId() => windowPattern.id;
+  SingleWindowWidget({Key? key, ScreenMode? screenMode, String? id})
+      : windowSetting = WindowSetting(
+            id: id, screenMode: screenMode ?? ScreenMode.onlyFullScreen),
+        super(key: key);
 
+  @protected
+  String getId() => windowSetting.id;
+
+  @protected
   bool scrollable();
 
-  void initWindow() {}
+  @protected
+  void initState() {}
+
+  @protected
+  void setState(VoidCallback fn) {
+    windowSetting._setState(fn);
+  }
 
   WindowFrame windowFrameBuilder(Widget child) =>
       DefaultWindowFrame(child, getId());
 
-  void setScreenMode(ScreenMode screenMode) =>
-      windowPattern.screenMode = screenMode;
+  void changeScreenMode(ScreenMode screenMode) =>
+      windowSetting.screenMode = screenMode;
 
-  @protected
-  SingleWindowInterface buildSingleWindowInterface() {
-    initWindow();
-    return SingleWindowInterface(child: _framework(this));
-  }
+  @override
+  State<StatefulWidget> createState() => SingleWindowWidgetState();
+
+  Widget build(BuildContext context);
 }
 
-class _InstanceSingleWindowInterface extends StatelessWidget
-    with SingleWindowInterfaceMixin {
-  final Widget child;
-  final String id;
-  final ScreenMode screenMode;
-  final bool isScrollable;
-
-  _InstanceSingleWindowInterface(this.id, this.child,
-      {this.isScrollable = false, this.screenMode = ScreenMode.window}) {
-    this.windowPattern.id = id;
+class SingleWindowWidgetState extends State<SingleWindowWidget> {
+  @override
+  void initState() {
+    widget.initState();
+    widget.windowSetting._setState = setState;
+    super.initState();
   }
 
   @override
-  Widget build(BuildContext context) => this.child;
+  void setState(VoidCallback fn) {
+    super.setState(fn);
+  }
 
   @override
-  void initWindow() => this.setScreenMode(this.screenMode);
+  Widget build(BuildContext context) =>
+      widget._framework(widget.build(context));
+}
+
+class SingleWindowInterface extends SingleWindowWidget {
+  final Widget child;
+  final bool _scrollable;
+
+  SingleWindowInterface(this.child,
+      {Key? key, String? id, bool? scrollable, ScreenMode? screenMode})
+      : _scrollable = scrollable ?? false,
+        super(
+            key: key,
+            screenMode: screenMode ?? ScreenMode.onlyFullScreen,
+            id: id);
 
   @override
-  bool scrollable() => this.isScrollable;
+  Widget build(BuildContext context) => child;
+
+  static SingleWindowWidget buildWithSingleWindowInterface(
+          String id, Widget child,
+          {bool isScrollable = false,
+          ScreenMode screenMode = ScreenMode.window}) =>
+      SingleWindowInterface(
+        child,
+        id: id,
+        scrollable: isScrollable,
+        screenMode: screenMode,
+      );
+
+  @override
+  bool scrollable() => _scrollable;
 }
