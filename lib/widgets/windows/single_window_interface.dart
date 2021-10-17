@@ -6,8 +6,9 @@ class WindowSetting {
   ScreenMode screenMode;
   final String id;
   void Function(VoidCallback fn) _setState = (VoidCallback fn) {};
+  ScrollController? scrollController;
 
-  WindowSetting({String? id, ScreenMode? screenMode})
+  WindowSetting({String? id, ScreenMode? screenMode, this.scrollController})
       : this.id = id ?? 'Unknown Instance',
         this.screenMode = screenMode ?? ScreenMode.onlyFullScreen;
 }
@@ -18,9 +19,22 @@ final singleWindowInterfaceLogger =
 abstract class SingleWindowWidget extends StatefulWidget {
   final WindowSetting windowSetting;
 
+  SingleWindowWidget(
+      {Key? key,
+      ScreenMode? screenMode,
+      String? id,
+      ScrollController? controller})
+      : windowSetting = WindowSetting(
+            id: id, screenMode: screenMode, scrollController: controller),
+        super(key: key);
+
   /// TODO: UniversalSingleChildScrollView have been crash in Flutter 2.5.0, need update
-  Widget _scrollview(Widget child) =>
-      scrollable() ? SingleChildScrollView(child: child) : child;
+  Widget _scrollview(Widget child) => scrollable()
+      ? SingleChildScrollView(
+          child: child,
+          controller: windowSetting.scrollController,
+        )
+      : child;
 
   Widget _framework(Widget child) {
     switch (windowSetting.screenMode) {
@@ -35,13 +49,11 @@ abstract class SingleWindowWidget extends StatefulWidget {
     }
   }
 
-  SingleWindowWidget({Key? key, ScreenMode? screenMode, String? id})
-      : windowSetting = WindowSetting(
-            id: id, screenMode: screenMode ?? ScreenMode.onlyFullScreen),
-        super(key: key);
+  @protected
+  String get id => windowSetting.id;
 
   @protected
-  String getId() => windowSetting.id;
+  ScrollController? get scrollController => windowSetting.scrollController;
 
   @protected
   bool scrollable();
@@ -54,8 +66,12 @@ abstract class SingleWindowWidget extends StatefulWidget {
     windowSetting._setState(fn);
   }
 
-  WindowFrame windowFrameBuilder(Widget child) =>
-      DefaultWindowFrame(child, getId());
+  @protected
+  void dispose() {
+    windowSetting.scrollController?.dispose();
+  }
+
+  WindowFrame windowFrameBuilder(Widget child) => DefaultWindowFrame(child, id);
 
   void changeScreenMode(ScreenMode screenMode) =>
       windowSetting.screenMode = screenMode;
@@ -82,6 +98,12 @@ class SingleWindowWidgetState extends State<SingleWindowWidget> {
   @override
   Widget build(BuildContext context) =>
       widget._framework(widget.build(context));
+
+  @override
+  void dispose() {
+    widget.dispose();
+    super.dispose();
+  }
 }
 
 class SingleWindowInterface extends SingleWindowWidget {
