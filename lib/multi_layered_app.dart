@@ -18,7 +18,7 @@ class MultiLayeredApp extends StatelessWidget {
   final ThemeData? darkTheme;
   final ThemeMode themeMode;
   static final universalRouter = UniversalRouter.initialize();
-
+  static changePath(String path) => UniversalRouter.changePath(path);
   MultiLayeredApp(
       {Key? key,
       this.initProcess = _func,
