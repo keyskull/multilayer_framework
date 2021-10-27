@@ -6,6 +6,7 @@ import 'package:universal_router/route.dart';
 
 import 'layers/decoration_layer.dart';
 import 'layers/navigation_layer.dart';
+import 'layers/notification_layer.dart';
 
 export 'layers/decoration_layer.dart';
 export 'layers/navigation_layer.dart';
@@ -89,8 +90,9 @@ final defaultAppBarBuilder =
                 iconSize: 35,
                 icon: Icon(Icons.add_alert_rounded),
                 onPressed: () {
-                  MultiLayeredApp.layerManagement
-                      .createContainer('aaa', layerName: 'NotificationLayer');
+                  MultiLayeredApp.layerManagement.createContainer(
+                      options.openList,
+                      layerName: 'NotificationLayer');
 
                   // UniversalRouter.changePath('about-me');
                 },

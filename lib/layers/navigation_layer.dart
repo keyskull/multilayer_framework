@@ -7,6 +7,8 @@ import '../widgets/floating_action_button.dart';
 
 final GlobalKey<CustomNavigationRailState> navigationRailKey = GlobalKey();
 
+final Map<String, void Function()?> restoreDisplayListener = Map();
+
 Function(BuildContext context,
         {required Function() switchNavigatorRailState,
         required Function() switchContactButtonState,
@@ -65,13 +67,15 @@ class NavigationLayerState extends State<NavigationLayer>
       navigationRailButtons:
           widget.navigationRailButtons ?? defaultNavigationRailButtons,
     );
-
     return Scaffold(
         // key: scaffoldKey,
         primary: true,
         body: RawMaterialButton(
             mouseCursor: SystemMouseCursors.basic,
-            onPressed: () => navigationRailKey.currentState?.closeRail(),
+            onPressed: () {
+              navigationRailKey.currentState?.closeRail();
+              restoreDisplayListener.values.forEach((e) => e?.call());
+            },
             child: customNavigationRail),
         // floatingActionButtonAnimator: ,
         floatingActionButton: floatingActionButton(

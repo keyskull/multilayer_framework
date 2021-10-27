@@ -32,19 +32,16 @@ class NotificationLayer extends StatefulWidget with MultiLayer {
   @override
   createContainer(identity) {
     if (identity is options) {
-      switch (identity) {
-        case options.openList:
-          stateSetting.openNotificationList != null
-              ? stateSetting.openNotificationList!()
-              : {};
-          break;
-      }
-    } else if (identity is String) {
+      stateSetting.openNotificationList != null
+          ? stateSetting.openNotificationList!()
+          : {};
+    }
+    if (identity is String) {
       stateSetting.addNotificationCard != null
           ? stateSetting.addNotificationCard!(identity)
           : {};
     }
-    logger.i('createContainer executed: ' + identity);
+    logger.i('createContainer executed: ' + identity.toString());
   }
 
   @override
@@ -71,6 +68,8 @@ class NotificationLayerState extends State<NotificationLayer>
     stateSetting.context = context;
     stateSetting.addNotificationCard = addNotificationCard;
     stateSetting.openNotificationList = openNotificationList;
+    restoreDisplayListener[closeNotificationList.hashCode.toString()] =
+        closeNotificationList;
     super.initState();
   }
 
@@ -149,47 +148,40 @@ class NotificationLayerState extends State<NotificationLayer>
 
   openNotificationList() {
     this.setState(() {
-      this.stack = Stack(
-        alignment: Alignment.topRight,
-        children: [
-          consistNotificationList(context),
-          Padding(
-              padding: EdgeInsets.only(top: appBarHeight + 15, right: 15),
-              child: Container(
-                constraints: BoxConstraints(minHeight: 0, maxHeight: 500),
-                width: 300,
-                child: SingleChildScrollView(
-                  child: Column(children: notificationList.values.toList()),
-                ),
-              ))
-        ],
-      );
+      this.list = consistNotificationList(context);
     });
   }
 
   closeNotificationList() {
     this.setState(() {
-      this.stack = Stack(alignment: Alignment.topRight, children: [
-        Padding(
-            padding: EdgeInsets.only(top: appBarHeight + 15, right: 15),
-            child: Container(
-              constraints: BoxConstraints(minHeight: 0, maxHeight: 500),
-              width: 300,
-              child: SingleChildScrollView(
-                child: Column(children: notificationList.values.toList()),
-              ),
-            ))
-      ]);
+      this.list = Container();
     });
   }
 
-  Widget stack = Stack();
+  Widget list = Container();
 
   @override
   Widget build(BuildContext context) {
     stateSetting.context = context;
     stateSetting.setState = setState;
-    closeNotificationList();
-    return this.stack;
+
+    // setState(() {
+    //   stateSetting.openNotificationList =
+    //       () => this.list = consistNotificationList(context);
+    // });
+
+    return Stack(alignment: Alignment.topRight, children: [
+      list,
+      Padding(
+          padding: EdgeInsets.only(top: appBarHeight + 15, right: 15),
+          child: Container(
+            constraints: BoxConstraints(minHeight: 0, maxHeight: 500),
+            width: 300,
+            child: SingleChildScrollView(
+              child: Column(children: notificationList.values.toList()),
+            ),
+          ))
+    ]);
+    ;
   }
 }

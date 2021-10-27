@@ -60,8 +60,10 @@ class LayerManagement {
   }
 
   dynamic createContainer(dynamic identity, {String? layerName}) {
-    _logger
-        .i('createContainer executed: ' + identity + ', ' + (layerName ?? ''));
+    _logger.i('createContainer executed: ' +
+        identity.toString() +
+        ', ' +
+        (layerName ?? ''));
     if (layerName == null) {
       assert(_defaultLayer != null, "LayerManagement hasn't initialized.");
       return _defaultLayer!.createContainer(identity);
