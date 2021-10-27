@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'window_frame.dart';
+import 'window_frame_widget.dart';
 
-class DefaultWindowFrame extends WindowFrame {
-  DefaultWindowFrame(Widget child, String id) : super(child, id);
+class DefaultWindowFrameWidget extends WindowFrameWidget {
+  DefaultWindowFrameWidget(Widget child, String id) : super(child, id);
 
   @override
   WindowWidget frameDecorationBuilder(context, child, id, closeButton,

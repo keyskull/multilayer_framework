@@ -1,4 +1,23 @@
-part of '../framework.dart';
+// class NotificationListener {
+//   final bool Function(Notification notification) listenerBuilder;
+//   final AnimationController controller;
+//
+//   NotificationListener(this.listenerBuilder, this.controller);
+// }
+
+import 'package:cullen_utilities/custom_log_printer.dart';
+import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:universal_router/route.dart';
+
+import '../framework.dart';
+
+AppBar Function(double, bool, BuildContext) _appBarBuilder =
+    defaultAppBarBuilder;
+
+setAppbarBuilder(
+        AppBar Function(double, bool, BuildContext) newAppBarBuilder) =>
+    _appBarBuilder = newAppBarBuilder;
 
 Map<String, bool Function(Notification notification)>
     globalNotificationListeners = {};
@@ -19,10 +38,10 @@ class DecorationLayerState extends State<DecorationLayer>
   final logger = Logger(printer: CustomLogPrinter('RouterDelegateInherit'));
   var _appBarHeight = appBarHeight;
   late bool isRoot;
-
   @override
   void initState() {
     // decorations = decorations + [LicenseInformationBottomBar()];
+
     WidgetsBinding.instance!.endOfFrame.then(
       (_) => afterFirstLayout(context),
     );
@@ -82,7 +101,7 @@ class DecorationLayerState extends State<DecorationLayer>
         else if (!scrollNotification.metrics.outOfRange &&
             scrollNotification.metrics.pixels !=
                 scrollNotification.metrics.maxScrollExtent) {
-          final controller = AnimationController(
+          final AnimationController controller = AnimationController(
               duration: const Duration(milliseconds: 200), vsync: this);
           final animation =
               Tween<double>(begin: _appBarHeight, end: appBarHeight)
@@ -97,10 +116,8 @@ class DecorationLayerState extends State<DecorationLayer>
       }
       return true;
     };
-    log(
-        'globalNotificationListeners:' +
-            globalNotificationListeners.keys.join(','),
-        name: 'globalNotificationListeners');
+    logger.d('globalNotificationListeners:' +
+        globalNotificationListeners.keys.join(','));
   }
 
   void afterFirstLayout(BuildContext context) {
@@ -110,7 +127,8 @@ class DecorationLayerState extends State<DecorationLayer>
   @override
   void didUpdateWidget(covariant DecorationLayer oldWidget) {
     globalNotificationListeners.remove(oldWidget.hashCode.toString());
-    log('Decoration Layer deleted oldWidget:' + oldWidget.hashCode.toString());
+    logger.d(
+        'Decoration Layer deleted oldWidget:' + oldWidget.hashCode.toString());
     _registerScrollNotificationListener();
     super.didUpdateWidget(oldWidget);
   }

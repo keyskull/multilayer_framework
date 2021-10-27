@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 
-import '../../../framework.dart';
+import '../../framework.dart';
+import '../../layers/window_layer.dart';
+import 'default_window_frame_widget.dart';
+import 'window_frame_widget.dart';
+
+WindowFrameWidget Function(Widget child, String id) windowFrameBuilder =
+    (Widget child, String id) => DefaultWindowFrameWidget(child, id);
 
 class Window extends StatefulWidget {
   final SingleWindowWidget? singleWindowWidget;
@@ -39,7 +45,8 @@ class WindowState extends State<Window> {
   }
 
   @override
-  Widget build(BuildContext context) => this.singleWindowInterface;
+  Widget build(BuildContext context) => windowFrameBuilder(
+      this.singleWindowInterface, this.singleWindowInterface.id);
 
   @override
   void dispose() {

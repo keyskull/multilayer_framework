@@ -8,6 +8,8 @@ import 'package:universal_router/route.dart';
 
 import 'framework.dart';
 import 'layer_management.dart';
+import 'layers/notification_layer.dart';
+import 'layers/window_layer.dart';
 
 void _func(BuildContext context) {}
 
@@ -48,6 +50,7 @@ class MultiLayeredApp extends StatelessWidget {
             builder: (context) => navigationLayerBuilder(decorationLayerBuilder(
                 child ?? UniversalRouter.unknownPage.getPage().child)))));
     layerManagement.addLayer(WindowLayer());
+    layerManagement.addLayer(NotificationLayer(context));
 
     return MaterialApp.router(
       theme: theme ?? ThemeData.light(),

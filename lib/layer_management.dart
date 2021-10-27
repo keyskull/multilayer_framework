@@ -1,11 +1,16 @@
 import 'dart:collection';
 
-import 'package:flutter/cupertino.dart';
+import 'package:cullen_utilities/custom_log_printer.dart';
+import 'package:flutter/widgets.dart';
+import 'package:logger/logger.dart';
 
 import 'multi_layered_app.dart';
 
+final _logger = Logger(printer: CustomLogPrinter('MultiLayer'));
+
 mixin MultiLayer {
   String get name;
+
   OverlayEntry Function(BuildContext context, Widget? child)
       get overlayEntryBuilder;
 
@@ -15,7 +20,7 @@ mixin MultiLayer {
 }
 
 class NativeLayer implements MultiLayer {
-  final String name = 'Native Layer';
+  final String name = 'NativeLayer';
   final OverlayEntry Function(BuildContext context, Widget? child)
       overlayEntryBuilder;
 
@@ -55,6 +60,8 @@ class LayerManagement {
   }
 
   dynamic createContainer(dynamic identity, {String? layerName}) {
+    _logger
+        .i('createContainer executed: ' + identity + ', ' + (layerName ?? ''));
     if (layerName == null) {
       assert(_defaultLayer != null, "LayerManagement hasn't initialized.");
       return _defaultLayer!.createContainer(identity);

@@ -6,8 +6,8 @@ import 'package:logger/logger.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:universal_router/route.dart';
 
-import '../framework.dart';
 import '../multi_layered_app.dart';
+import '../properties/default_navigation_rail_buttons.dart';
 
 /// This is the stateful widget that the main application instantiates.
 class CustomNavigationRail extends StatefulWidget {

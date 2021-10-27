@@ -31,45 +31,47 @@ final defaultFloatingActionButtons = (context,
                 heroTag: 'hidden',
               ))),
           PointerInterceptor(
-              child:
-                  Column(mainAxisAlignment: MainAxisAlignment.end, children: [
-            FloatingActionButton(
-              mini: true,
-              onPressed: () {
-                switchContactButtonState();
-                launch('mailto:contact@numflurry.ml');
-              },
-              child: contactButtonExtended
-                  ? Icon(Icons.email)
-                  : Icon(Icons.email_outlined),
-              heroTag: 'btn2',
-            ),
-            SizedBox(height: 10),
-            FloatingActionButton(
-              mini: true,
-              onPressed: () {
-                switchContactButtonState();
-                MultiLayeredApp.layerManagement.createContainer(
-                    'blog/使用免费网络源创建个人网站的多种方法和实现过程',
-                    layerName: 'WindowLayer');
-                // windowsContainer.openWindow(InstanceBuilder(
-                //     windowBuilder: (id) =>
-                //         SingleWindowInterface.buildWithSingleWindowInterface(
-                //           id,
-                //           // MarkdownEditor()
-                //           Container(
-                //             color: Colors.blue.withRed(Random().nextInt(255)),
-                //             child: Text('[' +
-                //                 windowsContainer.getWindowIdList().join(',') +
-                //                 ']'),
-                //           ),
-                //         )));
-              },
-              child: contactButtonExtended
-                  ? Icon(Icons.message)
-                  : Icon(Icons.message_outlined),
-            )
-          ]))
+              child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                FloatingActionButton(
+                  mini: true,
+                  onPressed: () {
+                    switchContactButtonState();
+                    launch('mailto:contact@numflurry.ml');
+                  },
+                  child: contactButtonExtended
+                      ? Icon(Icons.email)
+                      : Icon(Icons.email_outlined),
+                  heroTag: 'btn2',
+                ),
+                SizedBox(height: 10),
+                FloatingActionButton(
+                  mini: true,
+                  onPressed: () {
+                    switchContactButtonState();
+                    MultiLayeredApp.layerManagement.createContainer(
+                        'blog/使用免费网络源创建个人网站的多种方法和实现过程',
+                        layerName: 'WindowLayer');
+                    // windowsContainer.openWindow(InstanceBuilder(
+                    //     windowBuilder: (id) =>
+                    //         SingleWindowInterface.buildWithSingleWindowInterface(
+                    //           id,
+                    //           // MarkdownEditor()
+                    //           Container(
+                    //             color: Colors.blue.withRed(Random().nextInt(255)),
+                    //             child: Text('[' +
+                    //                 windowsContainer.getWindowIdList().join(',') +
+                    //                 ']'),
+                    //           ),
+                    //         )));
+                  },
+                  child: contactButtonExtended
+                      ? Icon(Icons.message)
+                      : Icon(Icons.message_outlined),
+                )
+              ]))
         ],
       ),
     );

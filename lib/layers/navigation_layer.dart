@@ -1,4 +1,9 @@
-part of '../framework.dart';
+import 'package:cullen_utilities/screen_size.dart';
+import 'package:flutter/material.dart';
+
+import '../properties/default_navigation_rail_buttons.dart';
+import '../widgets/custom_navigation_rail.dart';
+import '../widgets/floating_action_button.dart';
 
 final GlobalKey<CustomNavigationRailState> navigationRailKey = GlobalKey();
 

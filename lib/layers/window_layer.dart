@@ -1,4 +1,13 @@
-part of '../framework.dart';
+import 'package:cullen_utilities/custom_log_printer.dart';
+import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
+import 'package:universal_router/route.dart';
+import 'package:universal_router/ui/views/screen/unknown.dart';
+import 'package:uuid/uuid.dart';
+
+import '../layer_management.dart';
+import '../widgets/windows/single_window_interface.dart';
+import '../widgets/windows/window_state.dart';
 
 final WindowsContainer windowsContainer = WindowsContainer();
 final windowLayerLogger = Logger(printer: CustomLogPrinter('WindowLayer'));

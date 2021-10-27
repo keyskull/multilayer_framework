@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
-import '../../framework.dart';
+import '../../layers/window_layer.dart';
 
 final logger = Logger(printer: CustomLogPrinter('WindowFrame'));
 
@@ -16,12 +16,12 @@ final boxConstraints = BoxConstraints(
 final boxDecoration =
     BoxDecoration(color: Colors.white, border: Border.all(width: 2));
 
-abstract class WindowFrame extends StatelessWidget {
+abstract class WindowFrameWidget extends StatelessWidget {
   final Widget child;
   final String id;
   final Offset? position;
 
-  WindowFrame(this.child, this.id, {this.position}) {
+  WindowFrameWidget(this.child, this.id, {this.position}) {
     if (position != null) windowsContainer.updatePosition(id, position!);
   }
 

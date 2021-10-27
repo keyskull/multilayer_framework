@@ -1,29 +1,26 @@
-import 'dart:developer';
-
-import 'package:cullen_utilities/custom_log_printer.dart';
-import 'package:cullen_utilities/screen_size.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:localization/generated/l10n.dart';
-import 'package:logger/logger.dart';
+import 'package:multilayer_framework/multi_layered_app.dart';
 import 'package:universal_router/route.dart';
-import 'package:universal_router/ui/views/screen/unknown.dart';
-import 'package:uuid/uuid.dart';
 
-import 'layer_management.dart';
-import 'widgets/custom_navigation_rail.dart';
-import 'widgets/floating_action_button.dart';
-import 'widgets/windows/default_window_frame.dart';
-import 'widgets/windows/window_frame.dart';
-import 'widgets/windows/window_state.dart';
+import 'layers/decoration_layer.dart';
+import 'layers/navigation_layer.dart';
 
-part 'layers/decoration_layer.dart';
-part 'layers/navigation_layer.dart';
-part 'layers/window_layer.dart';
-part 'properties/default_navigation_rail_buttons.dart';
-part 'widgets/windows/single_window_interface.dart';
+export 'layers/decoration_layer.dart';
+export 'layers/navigation_layer.dart';
+export 'layers/window_layer.dart';
+export 'properties/default_navigation_rail_buttons.dart';
+export 'widgets/windows/single_window_interface.dart';
 
 void _func() {}
+
+enum ScreenMode {
+  window,
+  fullScreenWindow,
+  onlyFullScreen,
+  fixedPositionWindow
+}
 
 EdgeInsets edgeInsetsAll = const EdgeInsets.all(20.0);
 double articleItemHeight = 133;
@@ -92,7 +89,10 @@ final defaultAppBarBuilder =
                 iconSize: 35,
                 icon: Icon(Icons.add_alert_rounded),
                 onPressed: () {
-                  UniversalRouter.changePath('about-me');
+                  MultiLayeredApp.layerManagement
+                      .createContainer('aaa', layerName: 'NotificationLayer');
+
+                  // UniversalRouter.changePath('about-me');
                 },
               )
             ]);
@@ -108,12 +108,5 @@ final Widget Function(Widget child, {Key? key}) defaultDecorationLayer =
           key: key,
           child: child,
         );
-
-AppBar Function(double, bool, BuildContext) _appBarBuilder =
-    defaultAppBarBuilder;
-
-setAppbarBuilder(
-        AppBar Function(double, bool, BuildContext) newAppBarBuilder) =>
-    _appBarBuilder = newAppBarBuilder;
 
 setActionButton(List<ActionButtonWidget> list) => _actionButtonList = list;
