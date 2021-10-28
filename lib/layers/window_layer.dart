@@ -1,19 +1,25 @@
 import 'package:cullen_utilities/custom_log_printer.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
+import 'package:multilayer_framework/widgets/windows/default_window_frame_widget.dart';
+import 'package:multilayer_framework/widgets/windows/window_frame_widget.dart';
 import 'package:universal_router/route.dart';
 import 'package:universal_router/ui/views/screen/unknown.dart';
 import 'package:uuid/uuid.dart';
 
+import '../framework.dart';
 import '../layer_management.dart';
 import '../widgets/windows/single_window_interface.dart';
-import '../widgets/windows/window_state.dart';
 
 final WindowsContainer windowsContainer = WindowsContainer();
 final windowLayerLogger = Logger(printer: CustomLogPrinter('WindowLayer'));
 
 final unknown = SingleWindowInterface.buildWithSingleWindowInterface(
     const Uuid().v1(), const Unknown());
+
+WindowFrameWidget Function(SingleWindowWidget child, String id)
+    windowFrameWidgetBuilder = (SingleWindowWidget child, String id) =>
+        DefaultWindowFrameWidget(child, id);
 
 /// [WindowLayer] is the top layer which is use for managing the widget which
 /// implemented [SingleWindowInterfaceMixin] mixin class.
@@ -48,15 +54,22 @@ class WindowLayer extends StatefulWidget with MultiLayer {
 
   @override
   OverlayEntry Function(BuildContext context, Widget? child)
-      get overlayEntryBuilder =>
-          (context, child) => OverlayEntry(builder: (context) => this);
+      get overlayEntryBuilder => (context, child) =>
+          OverlayEntry(maintainState: true, builder: (context) => this);
 }
 
 class _WindowLayerState extends State<WindowLayer> {
-  List<Positioned> instances = [];
+  List<WindowFrameWidget> instances = [];
   Map<String, SingleWindowWidget> instanceCache = {};
 
   updateInstances() {
+    windowLayerLogger.d('updateInstances executed.');
+    windowLayerLogger.v('updateInstances: instances List of windows: [' +
+        instances.map((e) => e.id).join(',') +
+        ']');
+    windowLayerLogger.v('updateInstances: instanceBuilders List of windows: [' +
+        windowsContainer.instanceBuilders.map((e) => e.id).join(',') +
+        ']');
     setState(() {
       instances.clear();
       for (var index = 0;
@@ -72,30 +85,38 @@ class _WindowLayerState extends State<WindowLayer> {
             }();
 
         windowLayerLogger.d('generating instance: ' + e.id.toString());
-        windowLayerLogger.d('position: [' +
-            e.position.dx.toString() +
-            ',' +
-            e.position.dy.toString() +
-            ']');
+        // windowLayerLogger.d('position: [' +
+        //     e.position.dx.toString() +
+        //     ',' +
+        //     e.position.dy.toString() +
+        //     ']');
 
-        instances.add(Positioned(
-            left: e.position.dx,
-            top: e.position.dy,
-            child: windowsContainer.windows.length < index + 1
-                ? () {
-                    final window =
-                        Window(singleWindowWidget: singleWindowWidget);
-                    windowsContainer.windows.add(window);
-                    return windowsContainer.windows[index] ??
-                        Window(singleWindowWidget: unknown);
-                  }()
-                : () {
-                    windowsContainer.windowStates[index]
-                        ?.refresh(singleWindowWidget);
-                    return windowsContainer.windows[index] ??
-                        Window(singleWindowWidget: unknown);
-                  }()));
+        instances.add(windowFrameWidgetBuilder(
+            singleWindowWidget, singleWindowWidget.id));
+        // instances.add(windowsContainer.windows.length < index + 1
+        //     ? () {
+        //         final window = windowFrameWidgetBuilder(
+        //             singleWindowWidget, singleWindowWidget.id);
+        //         windowsContainer.windows.add(window);
+        //         return windowsContainer.windows[index] ??
+        //             windowFrameWidgetBuilder(unknown, unknown.id);
+        //       }()
+        //     : () {
+        //         windowsContainer.windowStates[index]
+        //             ?.refresh(singleWindowWidget);
+        //         return windowsContainer.windows[index] ??
+        //             windowFrameWidgetBuilder(unknown, unknown.id);
+        //       }());
       }
+
+      windowLayerLogger.v(
+          'updateInstances: instances Updated list of windows: [' +
+              instances.map((e) => e.id).join(',') +
+              ']');
+
+      windowLayerLogger.v('updateInstances: states Updated list of windows: [' +
+          windowsContainer.windowStates.map((e) => e.id).join(',') +
+          ']');
     });
   }
 
@@ -103,15 +124,23 @@ class _WindowLayerState extends State<WindowLayer> {
   void initState() {
     updateInstances();
     windowsContainer.currentState = this;
+    WidgetsBinding.instance!.endOfFrame.then(
+      (_) => afterFirstLayout(context),
+    );
     super.initState();
+  }
+
+  void afterFirstLayout(BuildContext context) {
+    // instances.forEach((element) {
+    //   element..widgetSetting.refresh?.call(element.singleWindowWidget);
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
+    windowLayerLogger.d('build executed.');
     windowLayerLogger.i('list: [' +
-        instances
-            .map((e) => (e.child as Window).singleWindowWidget.hashCode)
-            .join(',') +
+        instances.map((e) => e.singleWindowWidget.id).join(',') +
         ']');
     return Stack(
       children: instances,
@@ -121,7 +150,8 @@ class _WindowLayerState extends State<WindowLayer> {
 
 class InstanceBuilder {
   late String id;
-  Offset position = new Offset(100, 100);
+
+  // Offset position = new Offset(100, 100);
   final SingleWindowWidget Function(String id) windowBuilder;
 
   InstanceBuilder({required this.windowBuilder});
@@ -132,8 +162,8 @@ class InstanceBuilder {
 ///
 class WindowsContainer {
   List<InstanceBuilder> instanceBuilders = [];
-  List<WindowState?> windowStates = [];
-  List<Window?> windows = [];
+  List<WindowFrameWidget> windows = [];
+  List<WindowFrameWidgetState> windowStates = [];
 
   _WindowLayerState? currentState;
 
@@ -163,27 +193,31 @@ class WindowsContainer {
   // TODO: _windowMode unfinished
   activatingWindow(String id) {
     windowLayerLogger.d('Activating window: $id');
-    windowLayerLogger
-        .v('List of windows: [' + getWindowIdList().join(',') + ']');
+    windowLayerLogger.v(
+        'activatingWindow: instanceBuilders List of windows: [' +
+            getWindowIdList().join(',') +
+            ']');
 
     final index = instanceBuilders.indexWhere((e) => e.id == id);
     windowLayerLogger.d('updated index: $index');
 
-    if (index != -1 &&
-        index < instanceBuilders.length &&
-        index != instanceBuilders.length - 1) {
+    if (index > -1 && index < instanceBuilders.length - 1) {
       final _ib = instanceBuilders[index];
       instanceBuilders[index] = instanceBuilders.last;
-      instanceBuilders[instanceBuilders.length - 1] = _ib;
+      instanceBuilders.last = _ib;
     }
     currentState?.updateInstances();
+    windowLayerLogger.v(
+        'activatingWindow: instanceBuilders Updated list of windows: [' +
+            getWindowIdList().join(',') +
+            ']');
   }
 
-  updatePosition(String id, Offset offset) {
-    windowLayerLogger.d('updatePosition: $id');
-
-    final builder = instanceBuilders.firstWhere((element) => element.id == id);
-    builder.position = offset;
-    currentState?.updateInstances();
-  }
+// updatePosition(String id, Offset offset) {
+//   windowLayerLogger.d('updatePosition: $id');
+//
+//   final builder = instanceBuilders.firstWhere((element) => element.id == id);
+//   builder.position = offset;
+//   currentState?.updateInstances();
+// }
 }
