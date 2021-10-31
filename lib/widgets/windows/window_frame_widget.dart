@@ -42,65 +42,32 @@ abstract class WindowFrameWidget extends StatefulWidget {
       bool activated);
 
   @override
-  State<StatefulWidget> createState() => WindowFrameWidgetState(position);
+  State<StatefulWidget> createState() => WindowFrameWidgetState();
 }
 
 class WindowFrameWidgetState extends State<WindowFrameWidget> {
   SingleWindowWidget singleWindowWidget = unknown;
-  Function() afterFirstLayoutFunction = () {};
   late String id;
-  Offset position;
+  late Offset position;
+  late Widget Function(Widget child) inactiveWidgetBuilder;
+
+  WindowFrameWidgetState();
+
   final ScreenshotController screenshotController = ScreenshotController();
+  final Widget Function(Widget child) defaultInactiveWidgetBuilder =
+      (child) => child;
 
-  WindowFrameWidgetState(this.position);
-
-  refresh(SingleWindowWidget singleWindowWidget) {
-    logger.i('refresh executed.');
-    setState(() {
-      if (singleWindowWidget != widget.singleWindowWidget)
-        this.singleWindowWidget = widget.singleWindowWidget;
-
-      final getIsActive = windowsContainer.isActive(this.singleWindowWidget.id);
-      if (getIsActive != isActive) {
-        isActive = getIsActive;
-        isActive ? activateWindow() : deactivateWindow();
-      }
-      this.id = this.singleWindowWidget.id;
-    });
-  }
-
+  Function() afterFirstLayoutFunction = () {};
   bool isActive = true;
-
-  Widget Function(Widget child) inactiveWidget = (child) => child;
-
-  deactivateWindow() {
-    setState(() {
-      inactiveWidget = (Widget child) => PointerInterceptor(
-            child: RawMaterialButton(
-              onPressed: () {
-                setState(() {
-                  activateWindow();
-                  windowsContainer.activatingWindow(id);
-                });
-              },
-              child: child,
-            ),
-          );
-      isActive = false;
-    });
-  }
-
-  activateWindow() {
-    setState(() {
-      inactiveWidget = (child) => child;
-      isActive = true;
-    });
-  }
+  double opacityLevel = 1;
+  bool captured = false;
 
   @override
   void initState() {
     this.singleWindowWidget = widget.singleWindowWidget;
     this.id = singleWindowWidget.id;
+    this.position = widget.position;
+    this.inactiveWidgetBuilder = defaultInactiveWidgetBuilder;
     widget.widgetSetting.refresh = refresh;
     windowsContainer.windowStates.add(this);
     windowsContainer.windowStates.forEach((element) {
@@ -119,8 +86,44 @@ class WindowFrameWidgetState extends State<WindowFrameWidget> {
     super.dispose();
   }
 
-  double opacityLevel = 1;
-  bool captured = false;
+  refresh(SingleWindowWidget singleWindowWidget) {
+    logger.i('refresh executed.');
+    setState(() {
+      if (singleWindowWidget != this.singleWindowWidget) {
+        this.singleWindowWidget = singleWindowWidget;
+
+        final getIsActive =
+            windowsContainer.isActive(this.singleWindowWidget.id);
+        if (getIsActive != isActive) {
+          isActive = getIsActive;
+          isActive ? activateWindow() : deactivateWindow();
+        }
+        this.id = this.singleWindowWidget.id;
+      }
+    });
+  }
+
+  deactivateWindow() {
+    setState(() {
+      inactiveWidgetBuilder = (Widget child) => RawMaterialButton(
+            onPressed: () {
+              setState(() {
+                activateWindow();
+                windowsContainer.activatingWindow(id);
+              });
+            },
+            child: child,
+          );
+      isActive = false;
+    });
+  }
+
+  activateWindow() {
+    setState(() {
+      inactiveWidgetBuilder = defaultInactiveWidgetBuilder;
+      isActive = true;
+    });
+  }
 
   Widget feedbackWidget = SizedBox(
     width: 200,
@@ -156,7 +159,7 @@ class WindowFrameWidgetState extends State<WindowFrameWidget> {
 
     Widget stack = Opacity(
         opacity: opacityLevel,
-        child: builtChild(inactiveWidget(frameDecoration)));
+        child: builtChild(inactiveWidgetBuilder(frameDecoration)));
 
     if (!captured) {
       screenshotController.capture(delay: Duration(seconds: 1)).then((value) {
