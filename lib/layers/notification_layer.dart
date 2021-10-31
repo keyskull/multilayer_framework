@@ -19,6 +19,7 @@ class StateSetting {
   void Function()? openNotificationList;
 }
 
+final LinkedHashMap<String, Widget> instanceNotificationList = LinkedHashMap();
 final LinkedHashMap<String, Widget> notificationList = LinkedHashMap();
 final StateSetting stateSetting = StateSetting();
 
@@ -85,6 +86,23 @@ class NotificationLayerState extends State<NotificationLayer>
   void addNotificationCard(String text) {
     this.setState(() {
       final uuid = Uuid().v1();
+
+      Card content = Card(
+          margin: EdgeInsets.all(10),
+          color: Theme.of(context).secondaryHeaderColor,
+          child: ListTile(
+            title: Text(text),
+            trailing: IconButton(
+              icon: Icon(Icons.clear),
+              onPressed: () {
+                this.setState(() {
+                  notificationList.remove(uuid);
+                  openNotificationList();
+                });
+              },
+            ),
+          ));
+
       TweenAnimationBuilder tweenAnimationBuilder =
           TweenAnimationBuilder<double>(
         duration: Duration(seconds: 15),
@@ -100,17 +118,18 @@ class NotificationLayerState extends State<NotificationLayer>
                 icon: Icon(Icons.clear),
                 onPressed: () {
                   this.setState(() {
-                    notificationList.remove(uuid);
+                    instanceNotificationList.remove(uuid);
                   });
                 },
               ),
             )),
       );
 
-      notificationList[uuid] = (tweenAnimationBuilder);
+      instanceNotificationList[uuid] = tweenAnimationBuilder;
+      notificationList[uuid] = content;
       Future.delayed(Duration(seconds: 10), () {
         this.setState(() {
-          notificationList.remove(uuid);
+          instanceNotificationList.remove(uuid);
         });
       });
     });
@@ -140,7 +159,7 @@ class NotificationLayerState extends State<NotificationLayer>
               ),
             ),
             SingleChildScrollView(
-              child: Container(),
+              child: Column(children: notificationList.values.toList()),
             )
           ],
         )),
@@ -178,10 +197,9 @@ class NotificationLayerState extends State<NotificationLayer>
             constraints: BoxConstraints(minHeight: 0, maxHeight: 500),
             width: 300,
             child: SingleChildScrollView(
-              child: Column(children: notificationList.values.toList()),
+              child: Column(children: instanceNotificationList.values.toList()),
             ),
           ))
     ]);
-    ;
   }
 }
