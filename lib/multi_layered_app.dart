@@ -45,10 +45,12 @@ class MultiLayeredApp extends StatelessWidget {
     final decorationLayerBuilder =
         this.decorationLayerBuilder ?? defaultDecorationLayer;
 
-    layerManagement.setDefaultLayer(NativeLayer((context, child) =>
-        OverlayEntry(
-            builder: (context) => navigationLayerBuilder(decorationLayerBuilder(
-                child ?? UniversalRouter.unknownPage.getPage().child)))));
+    layerManagement.setDefaultLayer(NativeLayer((context, child) => [
+          OverlayEntry(
+              builder: (context) => navigationLayerBuilder(
+                  decorationLayerBuilder(
+                      child ?? UniversalRouter.unknownPage.getPage().child)))
+        ]));
     layerManagement.addLayer(WindowLayer());
     layerManagement.addLayer(NotificationLayer(context));
 

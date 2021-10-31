@@ -53,9 +53,9 @@ class WindowLayer extends StatefulWidget with MultiLayer {
   }
 
   @override
-  OverlayEntry Function(BuildContext context, Widget? child)
+  List<OverlayEntry> Function(BuildContext context, Widget? child)
       get overlayEntryBuilder => (context, child) =>
-          OverlayEntry(maintainState: true, builder: (context) => this);
+          [OverlayEntry(maintainState: true, builder: (context) => this)];
 }
 
 class _WindowLayerState extends State<WindowLayer> {
@@ -204,8 +204,13 @@ class WindowsContainer {
     if (index > -1 && index < instanceBuilders.length - 1) {
       final _ib = instanceBuilders[index];
       instanceBuilders[index] = instanceBuilders.last;
+      windowStates[index].refresh(
+          instanceBuilders[index].windowBuilder(instanceBuilders[index].id));
       instanceBuilders.last = _ib;
+      windowStates.last.refresh(
+          instanceBuilders[index].windowBuilder((instanceBuilders[index].id)));
     }
+
     currentState?.updateInstances();
     windowLayerLogger.v(
         'activatingWindow: instanceBuilders Updated list of windows: [' +

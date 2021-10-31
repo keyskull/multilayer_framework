@@ -11,7 +11,7 @@ final _logger = Logger(printer: CustomLogPrinter('MultiLayer'));
 mixin MultiLayer {
   String get name;
 
-  OverlayEntry Function(BuildContext context, Widget? child)
+  List<OverlayEntry> Function(BuildContext context, Widget? child)
       get overlayEntryBuilder;
 
   dynamic createContainer(dynamic identity);
@@ -21,7 +21,7 @@ mixin MultiLayer {
 
 class NativeLayer implements MultiLayer {
   final String name = 'NativeLayer';
-  final OverlayEntry Function(BuildContext context, Widget? child)
+  final List<OverlayEntry> Function(BuildContext context, Widget? child)
       overlayEntryBuilder;
 
   NativeLayer(this.overlayEntryBuilder);
@@ -49,10 +49,10 @@ class LayerManagement {
   List<OverlayEntry> deployLayers(BuildContext context, Widget? child) {
     assert(_defaultLayer != null, "LayerManagement hasn't initialized.");
 
-    return [_defaultLayer!.overlayEntryBuilder(context, child)] +
+    return _defaultLayer!.overlayEntryBuilder(context, child) +
         _layers.values
             .map((e) => e.overlayEntryBuilder(context, child))
-            .toList();
+            .reduce((value, element) => value + element);
   }
 
   void setDefaultLayer(NativeLayer nativeLayer) {

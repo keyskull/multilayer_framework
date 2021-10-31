@@ -52,9 +52,9 @@ class NotificationLayer extends StatefulWidget with MultiLayer {
   final String name = 'NotificationLayer';
 
   @override
-  OverlayEntry Function(BuildContext context, Widget? child)
+  List<OverlayEntry> Function(BuildContext context, Widget? child)
       get overlayEntryBuilder =>
-          (context, child) => OverlayEntry(builder: (context) => this);
+          (context, child) => [OverlayEntry(builder: (context) => this)];
 
   @override
   State<StatefulWidget> createState() => NotificationLayerState();
