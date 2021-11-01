@@ -80,57 +80,10 @@ class WindowFrameWidgetState extends State<WindowFrameWidget> {
   refresh(String id) {
     logger.i('refresh executed.');
     setState(() {
-      // final instanceBuilders = windowsContainer
-      //     .instanceBuilders[windowsContainer.windowStates.indexOf(this)];
-
-      // if (instanceBuilders.id != this.id) {
-      //   final windowStateIndex = windowsContainer.windowStates
-      //       .indexWhere((element) => element.id == instanceBuilders.id);
-      //   if (windowStateIndex != -1) {
-      //     final getState = windowsContainer.windowStates[windowStateIndex];
-      //     final newId = getState.id;
-      //     final newBuildWidget = getState.buildWidget;
-      //     final newSingleWindowWidget = getState.singleWindowWidget;
-      //     final newPosition = getState.position;
-      //
-      //     windowsContainer.windowStates[windowStateIndex].buildWidget =
-      //         this.buildWidget;
-      //     getState.id = this.id;
-      //     getState.singleWindowWidget = this.singleWindowWidget;
-      //     getState.position = this.position;
-      //
-      //     this.buildWidget = newBuildWidget;
-      //     this.id = newId;
-      //     this.singleWindowWidget = newSingleWindowWidget;
-      //     this.position = newPosition;
-      //   }
-      // }
       this.id = id;
       isActive = windowsContainer.currentState?.isActive(id) ?? false;
     });
   }
-
-  // deactivateWindow() {
-  //   setState(() {
-  //     // inactiveWidgetBuilder = (Widget child) => RawMaterialButton(
-  //     //       onPressed: () {
-  //     //         setState(() {
-  //     //           activateWindow();
-  //     //           windowsContainer.activatingWindow(id);
-  //     //         });
-  //     //       },
-  //     //       child: child,
-  //     //     );
-  //     isActive = false;
-  //   });
-  // }
-  //
-  // activateWindow() {
-  //   setState(() {
-  //     // inactiveWidgetBuilder = defaultInactiveWidgetBuilder;
-  //     isActive = true;
-  //   });
-  // }
 
   Widget feedbackWidget = SizedBox(
     width: 200,
