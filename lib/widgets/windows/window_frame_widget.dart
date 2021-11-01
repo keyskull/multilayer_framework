@@ -20,15 +20,10 @@ final boxConstraints = BoxConstraints(
 final boxDecoration =
     BoxDecoration(color: Colors.white, border: Border.all(width: 2));
 
-class WindowFrameWidgetSetting {
-  void Function(SingleWindowWidget singleWindowWidget)? refresh;
-}
-
 abstract class WindowFrameWidget extends StatefulWidget {
   final SingleWindowWidget singleWindowWidget;
   final String id;
   final Offset position;
-  final WindowFrameWidgetSetting widgetSetting = WindowFrameWidgetSetting();
 
   WindowFrameWidget(this.singleWindowWidget, this.id, {Offset? position})
       : position = position ?? const Offset(100, 100);
@@ -42,7 +37,7 @@ abstract class WindowFrameWidget extends StatefulWidget {
       bool activated);
 
   @override
-  State<StatefulWidget> createState() => WindowFrameWidgetState();
+  WindowFrameWidgetState createState() => WindowFrameWidgetState();
 }
 
 class WindowFrameWidgetState extends State<WindowFrameWidget> {
@@ -68,12 +63,8 @@ class WindowFrameWidgetState extends State<WindowFrameWidget> {
     this.id = singleWindowWidget.id;
     this.position = widget.position;
     this.inactiveWidgetBuilder = defaultInactiveWidgetBuilder;
-    widget.widgetSetting.refresh = refresh;
+    // widget.widgetSetting.refresh = refresh;
     windowsContainer.windowStates.add(this);
-    windowsContainer.windowStates.forEach((element) {
-      element.refresh(this.singleWindowWidget);
-    });
-
     WidgetsBinding.instance!.endOfFrame.then(
       (_) => afterFirstLayout(context),
     );
@@ -86,44 +77,60 @@ class WindowFrameWidgetState extends State<WindowFrameWidget> {
     super.dispose();
   }
 
-  refresh(SingleWindowWidget singleWindowWidget) {
+  refresh(String id) {
     logger.i('refresh executed.');
     setState(() {
-      if (singleWindowWidget != this.singleWindowWidget) {
-        this.singleWindowWidget = singleWindowWidget;
+      // final instanceBuilders = windowsContainer
+      //     .instanceBuilders[windowsContainer.windowStates.indexOf(this)];
 
-        final getIsActive =
-            windowsContainer.isActive(this.singleWindowWidget.id);
-        if (getIsActive != isActive) {
-          isActive = getIsActive;
-          isActive ? activateWindow() : deactivateWindow();
-        }
-        this.id = this.singleWindowWidget.id;
-      }
+      // if (instanceBuilders.id != this.id) {
+      //   final windowStateIndex = windowsContainer.windowStates
+      //       .indexWhere((element) => element.id == instanceBuilders.id);
+      //   if (windowStateIndex != -1) {
+      //     final getState = windowsContainer.windowStates[windowStateIndex];
+      //     final newId = getState.id;
+      //     final newBuildWidget = getState.buildWidget;
+      //     final newSingleWindowWidget = getState.singleWindowWidget;
+      //     final newPosition = getState.position;
+      //
+      //     windowsContainer.windowStates[windowStateIndex].buildWidget =
+      //         this.buildWidget;
+      //     getState.id = this.id;
+      //     getState.singleWindowWidget = this.singleWindowWidget;
+      //     getState.position = this.position;
+      //
+      //     this.buildWidget = newBuildWidget;
+      //     this.id = newId;
+      //     this.singleWindowWidget = newSingleWindowWidget;
+      //     this.position = newPosition;
+      //   }
+      // }
+      this.id = id;
+      isActive = windowsContainer.currentState?.isActive(id) ?? false;
     });
   }
 
-  deactivateWindow() {
-    setState(() {
-      inactiveWidgetBuilder = (Widget child) => RawMaterialButton(
-            onPressed: () {
-              setState(() {
-                activateWindow();
-                windowsContainer.activatingWindow(id);
-              });
-            },
-            child: child,
-          );
-      isActive = false;
-    });
-  }
-
-  activateWindow() {
-    setState(() {
-      inactiveWidgetBuilder = defaultInactiveWidgetBuilder;
-      isActive = true;
-    });
-  }
+  // deactivateWindow() {
+  //   setState(() {
+  //     // inactiveWidgetBuilder = (Widget child) => RawMaterialButton(
+  //     //       onPressed: () {
+  //     //         setState(() {
+  //     //           activateWindow();
+  //     //           windowsContainer.activatingWindow(id);
+  //     //         });
+  //     //       },
+  //     //       child: child,
+  //     //     );
+  //     isActive = false;
+  //   });
+  // }
+  //
+  // activateWindow() {
+  //   setState(() {
+  //     // inactiveWidgetBuilder = defaultInactiveWidgetBuilder;
+  //     isActive = true;
+  //   });
+  // }
 
   Widget feedbackWidget = SizedBox(
     width: 200,
@@ -133,51 +140,38 @@ class WindowFrameWidgetState extends State<WindowFrameWidget> {
     ),
   );
 
+  late final Widget closeButton = ElevatedButton(
+      onPressed: () {
+        logger.d('closing window: ${widget.id}');
+        windowsContainer.currentState?.closeWindow(widget.id);
+      },
+      child: Icon(Icons.close));
+
+  late final Widget minimizeButton =
+      ElevatedButton(onPressed: () {}, child: Icon(Icons.minimize));
+
+  late final Widget maximizeButton =
+      ElevatedButton(onPressed: () {}, child: Icon(Icons.add));
+
   @override
   Widget build(BuildContext context) {
-    final Widget closeButton = ElevatedButton(
-        onPressed: () {
-          windowLayerLogger.d('closing window: ${widget.id}');
-          windowsContainer.closeWindow(widget.id);
-        },
-        child: Icon(Icons.close));
-
-    final Widget minimizeButton =
-        ElevatedButton(onPressed: () {}, child: Icon(Icons.minimize));
-
-    final Widget maximizeButton =
-        ElevatedButton(onPressed: () {}, child: Icon(Icons.add));
-    final Widget frameDecoration = Screenshot(
-        controller: screenshotController,
-        child: widget.frameDecorationBuilder(context, widget.singleWindowWidget,
-            closeButton, minimizeButton, maximizeButton, isActive));
-
-    builtChild(Widget contain) => PointerInterceptor(
-        child: DefaultTextStyle(
-            style: TextStyle(fontSize: 20, color: Colors.black),
-            child: Container(decoration: boxDecoration, child: contain)));
-
-    Widget stack = Opacity(
-        opacity: opacityLevel,
-        child: builtChild(inactiveWidgetBuilder(frameDecoration)));
-
     if (!captured) {
-      screenshotController.capture(delay: Duration(seconds: 1)).then((value) {
-        setState(() {
-          feedbackWidget = Image.memory(value ?? Uint8List(0));
-        });
-      }).onError((error, stackTrace) {
-        setState(() {
-          feedbackWidget =
-              Image.asset('images/4ddce98e9381ffa68cf9967919669e4.png');
-        });
-      });
       setState(() {
+        screenshotController.capture(delay: Duration(seconds: 1)).then((value) {
+          setState(() {
+            feedbackWidget = Image.memory(value ?? Uint8List(0));
+          });
+        }).onError((error, stackTrace) {
+          setState(() {
+            feedbackWidget =
+                Image.asset('images/4ddce98e9381ffa68cf9967919669e4.png');
+          });
+        });
         captured = true;
       });
     }
 
-    final dragWidget = Draggable(
+    return Draggable(
       maxSimultaneousDrags: 1,
       feedback: feedbackWidget,
       onDragStarted: () {
@@ -195,17 +189,41 @@ class WindowFrameWidgetState extends State<WindowFrameWidget> {
             position.dx != details.offset.dx)
           setState(() {
             position = details.offset;
-            // windowsContainer.updatePosition(widget.id, details.offset);
+            windowsContainer.currentState
+                ?.updatePosition(widget.id, details.offset);
           });
         setState(() {
           opacityLevel = 1;
         });
       },
       // childWhenDragging: Opacity(opacity: 0, child: stack),
-      child: stack,
+      child: Opacity(
+          opacity: opacityLevel,
+          child: PointerInterceptor(
+              child: Container(
+                  decoration: boxDecoration,
+                  child: (RawMaterialButton(
+                      mouseCursor: SystemMouseCursors.basic,
+                      onPressed: () {
+                        if (!isActive) {
+                          setState(() {
+                            this.isActive = true;
+                            windowsContainer.currentState
+                                ?.activatingWindow(this.id);
+                          });
+                        }
+                      },
+                      child: (Screenshot(
+                          controller: screenshotController,
+                          child: widget.frameDecorationBuilder(
+                              context,
+                              this.singleWindowWidget,
+                              closeButton,
+                              minimizeButton,
+                              maximizeButton,
+                              isActive)))))))),
       // rootOverlay: true,
     );
-    return Positioned(left: position.dx, top: position.dy, child: dragWidget);
   }
 
   void afterFirstLayout(BuildContext context) {
