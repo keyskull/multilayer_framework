@@ -44,7 +44,7 @@ class ActionButtonWidget extends StatelessWidget {
             child: Text(
               text,
               // overflow: TextOverflow.ellipsis,
-              style: const TextStyle(fontWeight: FontWeight.w400),
+              style: Theme.of(context).textTheme.button,
             )),
       );
 }
@@ -52,7 +52,7 @@ class ActionButtonWidget extends StatelessWidget {
 List<Widget> _actionButtonList = [];
 
 final defaultAppBarBuilder =
-    (double appBarHeight, bool isRoot, BuildContext context) => new AppBar(
+    (double appBarHeight, bool isRoot, BuildContext context) => AppBar(
         toolbarHeight: appBarHeight,
         backgroundColor: Theme.of(context).colorScheme.primary,
         leading: Container(
@@ -78,7 +78,7 @@ final defaultAppBarBuilder =
         // ),
         title: Text(
           S.of(context).title,
-          // style: const TextStyle(color: Colors.black),
+          style: Theme.of(context).textTheme.headline3,
           overflow: TextOverflow.visible,
         ),
         actions: _actionButtonList +
@@ -111,4 +111,4 @@ final Widget Function(Widget child, {Key? key}) defaultDecorationLayer =
           child: child,
         );
 
-setActionButton(List<ActionButtonWidget> list) => _actionButtonList = list;
+setActionButton(List<Widget> list) => _actionButtonList = list;

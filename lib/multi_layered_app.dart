@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/generated/l10n.dart';
 import 'package:logger/logger.dart';
+import 'package:multilayer_framework/layers/dialog_layer.dart';
 import 'package:universal_router/route.dart';
 
 import 'framework.dart';
@@ -27,7 +28,8 @@ class MultiLayeredApp extends StatelessWidget {
   static final LayerManagement layerManagement = LayerManagement();
 
   static changePath(String path) => UniversalRouter.changePath(path);
-
+  static pop() => UniversalRouter.pop();
+  static refresh() => changePath(universalRouter.currentConfiguration.path);
   MultiLayeredApp(
       {Key? key,
       this.initProcess = _func,
@@ -53,6 +55,7 @@ class MultiLayeredApp extends StatelessWidget {
         ]));
     layerManagement.addLayer(WindowLayer());
     layerManagement.addLayer(NotificationLayer(context));
+    layerManagement.addLayer(DialogLayer());
 
     return MaterialApp.router(
       theme: theme ?? ThemeData.light(),

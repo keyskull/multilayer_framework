@@ -46,15 +46,24 @@ class WindowLayer extends StatefulWidget with MultiLayer {
 
   @override
   createContainer(identity) {
-    Widget widget = UniversalRouter.getRouteInstance(identity).widget;
     String windowId = 'unknown';
-    windowsContainer.currentState?.openWindow(windowBuilder: (id) {
-      windowId = id;
-      return widget is SingleWindowWidget
-          ? widget
-          : SingleWindowInterface.buildWithSingleWindowInterface(id, widget);
-    });
-
+    if (identity is String) {
+      Widget widget = UniversalRouter.getRouteInstance(identity).widget;
+      windowsContainer.currentState?.openWindow(windowBuilder: (id) {
+        windowId = id;
+        return widget is SingleWindowWidget
+            ? widget
+            : SingleWindowInterface.buildWithSingleWindowInterface(id, widget);
+      });
+    } else if (identity is Widget) {
+      windowsContainer.currentState?.openWindow(windowBuilder: (id) {
+        windowId = id;
+        return identity is SingleWindowWidget
+            ? identity
+            : SingleWindowInterface.buildWithSingleWindowInterface(
+                id, identity);
+      });
+    }
     return windowId;
   }
 
