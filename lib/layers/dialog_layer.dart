@@ -1,4 +1,5 @@
 import 'package:cullen_utilities/custom_log_printer.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:logger/logger.dart';
@@ -6,30 +7,28 @@ import 'package:logger/logger.dart';
 import '../layer_management.dart';
 
 class _StateSetting {
-  void Function(Dialog dialog)? showDialog;
-  void Function()? destroyDialog;
+  void Function(Widget dialog) showDialog;
+  void Function() destroyDialog;
 
-  _StateSetting({this.showDialog, this.destroyDialog});
+  _StateSetting(this.showDialog, this.destroyDialog);
 }
 
 _StateSetting? _stateSetting;
 
-class DialogLayer extends StatefulWidget with MultiLayer {
-  final logger = Logger(printer: CustomLogPrinter('DialogLayer'));
+final logger = Logger(printer: CustomLogPrinter('DialogLayer'));
 
+class DialogLayer extends StatefulWidget with MultiLayer {
   @override
   createContainer(identity) {
-    if (identity is Dialog) {
-      _stateSetting?.showDialog?.call(identity);
+    if (identity is Widget) {
+      _stateSetting?.showDialog(identity);
     }
     logger.i('createContainer executed: ' + identity.toString());
   }
 
   @override
   destroyContainer(identity) {
-    if (identity is Dialog) {
-      _stateSetting?.destroyDialog?.call();
-    }
+    _stateSetting?.destroyDialog();
     logger.i('destroyContainer executed: ' + identity.toString());
   }
 
@@ -46,38 +45,41 @@ class DialogLayer extends StatefulWidget with MultiLayer {
 }
 
 class DialogLayerState extends State<DialogLayer> {
-  Dialog? _dialog;
+  late Widget _dialog;
 
-  showDialog_2(Dialog dialog) {
+  showDialog(Widget dialog) {
     setState(() {
-      showDialog(
-          context: context,
-          builder: (context) => SimpleDialog(),
-          routeSettings: RouteSettings());
-
-      _dialog = dialog;
+      logger.i('showDialog executed: ');
+      this._dialog = Stack(fit: StackFit.expand, children: [
+        GestureDetector(
+            onTap: () {
+              setState(() {
+                _dialog = Container();
+              });
+            },
+            child: ColoredBox(
+              color: Colors.black.withOpacity(0.5),
+            )),
+        dialog
+      ]);
     });
   }
 
   destroyDialog() {
     setState(() {
-      _dialog = null;
+      _dialog = Container();
     });
   }
 
   @override
   void initState() {
-    _stateSetting = new _StateSetting(
-        showDialog: showDialog_2, destroyDialog: destroyDialog);
-
+    _stateSetting = _StateSetting(showDialog, destroyDialog);
+    _dialog = Container();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      fit: StackFit.expand,
-      children: [SimpleDialog()],
-    );
+    return SafeArea(child: _dialog);
   }
 }

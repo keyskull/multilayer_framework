@@ -24,12 +24,13 @@ class MultiLayeredApp extends StatelessWidget {
 
   final logger = Logger(printer: CustomLogPrinter('MultiLayeredApp'));
 
-  static final UniversalRouter universalRouter = UniversalRouter.initialize();
+  // static final UniversalRouter universalRouter = UniversalRouter();
   static final LayerManagement layerManagement = LayerManagement();
 
   static changePath(String path) => UniversalRouter.changePath(path);
   static pop() => UniversalRouter.pop();
-  static refresh() => changePath(universalRouter.currentConfiguration.path);
+  static refresh() => changePath(UniversalRouter.currentConfiguration.path);
+
   MultiLayeredApp(
       {Key? key,
       this.initProcess = _func,
@@ -61,11 +62,9 @@ class MultiLayeredApp extends StatelessWidget {
       theme: theme ?? ThemeData.light(),
       darkTheme: darkTheme ?? ThemeData.dark(),
       themeMode: themeMode,
-      routerDelegate: MultiLayeredApp.universalRouter.routerDelegate,
-      routeInformationProvider:
-          MultiLayeredApp.universalRouter.routeInformationProvider,
-      routeInformationParser:
-          MultiLayeredApp.universalRouter.routerInformationParser,
+      routerDelegate: UniversalRouter.routerDelegate,
+      routeInformationProvider: UniversalRouter.routeInformationProvider,
+      routeInformationParser: UniversalRouter.routerInformationParser,
       builder: (context, Widget? child) {
         ScreenSize.initScreenSize(context);
         initProcess(context);

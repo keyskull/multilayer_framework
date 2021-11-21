@@ -35,7 +35,7 @@ class DecorationLayer extends StatefulWidget {
 
 class DecorationLayerState extends State<DecorationLayer>
     with TickerProviderStateMixin {
-  final logger = Logger(printer: CustomLogPrinter('RouterDelegateInherit'));
+  final logger = Logger(printer: CustomLogPrinter('DecorationLayer'));
   var _appBarHeight = appBarHeight;
   late bool isRoot;
   @override

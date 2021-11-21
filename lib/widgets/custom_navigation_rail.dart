@@ -6,7 +6,6 @@ import 'package:logger/logger.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:universal_router/route.dart';
 
-import '../multi_layered_app.dart';
 import '../properties/default_navigation_rail_buttons.dart';
 
 /// This is the stateful widget that the main application instantiates.
@@ -144,8 +143,8 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
                         onDestinationSelected: (int index) {
                           logger.d('onDestinationSelected');
                           setState(() {
-                            final key = MultiLayeredApp
-                                .universalRouter.currentConfiguration.path
+                            final key = UniversalRouter
+                                .currentConfiguration.path
                                 .substring(1);
                             // final key = '';
                             logger.i('key: $key');
@@ -200,8 +199,8 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
 
   void afterFirstLayout(BuildContext context) {
     setState(() {
-      final checkedIndex = widget.navigationRailButtons.buttonPaths.indexOf(
-          MultiLayeredApp.universalRouter.currentConfiguration.routeName);
+      final checkedIndex = widget.navigationRailButtons.buttonPaths
+          .indexOf(UniversalRouter.currentConfiguration.routeName);
       _selectedIndex = checkedIndex > 0 ? checkedIndex : 0;
     });
   }
