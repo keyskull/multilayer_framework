@@ -17,11 +17,7 @@ dependencies:
   localization:
     path: ../localization
 
-
   cullen_utilities:
-
-  markdown_editor:
-    path: ../markdown_editor
 
   universal_scroll_view:
   provider: ^5.0.0

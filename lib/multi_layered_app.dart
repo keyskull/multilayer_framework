@@ -4,20 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:localization/generated/l10n.dart';
 import 'package:logger/logger.dart';
-import 'package:multilayer_framework/layers/dialog_layer.dart';
 import 'package:universal_router/route.dart';
 
-import 'framework.dart';
 import 'layer_management.dart';
-import 'layers/notification_layer.dart';
-import 'layers/window_layer.dart';
 
 void _func(BuildContext context) {}
 
 class MultiLayeredApp extends StatelessWidget {
   final void Function(BuildContext context) initProcess;
-  final Widget Function(Widget child, {Key? key})? navigationLayerBuilder;
-  final Widget Function(Widget child, {Key? key})? decorationLayerBuilder;
   final ThemeData? theme;
   final ThemeData? darkTheme;
   final ThemeMode themeMode;
@@ -34,8 +28,6 @@ class MultiLayeredApp extends StatelessWidget {
   MultiLayeredApp(
       {Key? key,
       this.initProcess = _func,
-      this.navigationLayerBuilder,
-      this.decorationLayerBuilder,
       this.theme,
       this.darkTheme,
       this.themeMode = ThemeMode.system})
@@ -43,21 +35,6 @@ class MultiLayeredApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final navigationLayerBuilder =
-        this.navigationLayerBuilder ?? defaultNavigationLayer;
-    final decorationLayerBuilder =
-        this.decorationLayerBuilder ?? defaultDecorationLayer;
-
-    layerManagement.setDefaultLayer(NativeLayer((context, child) => [
-          OverlayEntry(
-              builder: (context) => navigationLayerBuilder(
-                  decorationLayerBuilder(
-                      child ?? UniversalRouter.unknownPage.getPage().child)))
-        ]));
-    layerManagement.addLayer(WindowLayer());
-    layerManagement.addLayer(NotificationLayer(context));
-    layerManagement.addLayer(DialogLayer());
-
     return MaterialApp.router(
       theme: theme ?? ThemeData.light(),
       darkTheme: darkTheme ?? ThemeData.dark(),

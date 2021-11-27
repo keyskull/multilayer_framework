@@ -37,20 +37,24 @@ class NativeLayer implements MultiLayer {
 }
 
 class LayerManagement {
-  final LinkedHashMap<String, MultiLayer> _layers = LinkedHashMap();
+  final LinkedHashMap<String, MultiLayer Function(BuildContext)>
+      _layersBuilder = LinkedHashMap();
+  Map<String, MultiLayer>? _layers;
   NativeLayer? _defaultLayer;
 
-  LayerManagement();
-
-  addLayer(MultiLayer layer) {
-    _layers[layer.name] = layer;
+  addLayerBuilder(
+      {required String name,
+      required MultiLayer Function(BuildContext) layerBuilder}) {
+    _layersBuilder[name] = layerBuilder;
   }
 
   List<OverlayEntry> deployLayers(BuildContext context, Widget? child) {
     assert(_defaultLayer != null, "LayerManagement hasn't initialized.");
 
+    _layers = _layersBuilder.map((key, value) => MapEntry(key, value(context)));
+
     return _defaultLayer!.overlayEntryBuilder(context, child) +
-        _layers.values
+        _layers!.values
             .map((e) => e.overlayEntryBuilder(context, child))
             .reduce((value, element) => value + element);
   }
@@ -65,21 +69,23 @@ class LayerManagement {
         ', ' +
         (layerName ?? ''));
     if (layerName == null) {
+      assert(_layers != null, "LayerManagement hasn't initialized.");
       assert(_defaultLayer != null, "LayerManagement hasn't initialized.");
       return _defaultLayer!.createContainer(identity);
     } else {
-      assert(_layers[layerName] != null, "doesn't include $layerName layer.");
-      return _layers[layerName]!.createContainer(identity);
+      assert(_layers?[layerName] != null, "doesn't include $layerName layer.");
+      return _layers![layerName]!.createContainer(identity);
     }
   }
 
   dynamic destroyContainer(dynamic identity, {String? layerName}) {
     if (layerName == null) {
+      assert(_layers != null, "LayerManagement hasn't initialized.");
       assert(_defaultLayer != null, "LayerManagement hasn't initialized.");
       return _defaultLayer!.destroyContainer(identity);
     } else {
-      assert(_layers[layerName] != null, "doesn't include $layerName layer.");
-      return _layers[layerName]!.destroyContainer(identity);
+      assert(_layers![layerName] != null, "doesn't include $layerName layer.");
+      return _layers![layerName]!.destroyContainer(identity);
     }
   }
 }
