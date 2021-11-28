@@ -18,6 +18,8 @@ dependencies:
     path: ../localization
 
   cullen_utilities:
+      path: ../cullen_utilities
+
 
   universal_scroll_view:
   provider: ^5.0.0
