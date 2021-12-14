@@ -8,16 +8,15 @@ class WindowSetting {
   ScrollController? scrollController;
 
   WindowSetting({String? id, this.scrollController})
-      : this.id = id ?? 'Unknown Instance' {
-    if (this.scrollController == null)
-      this.scrollController = ScrollController();
-  }
+      : this.id = id ?? 'Unknown Instance';
 }
 
 final _singleWindowInterfaceLogger =
     Logger(printer: CustomLogPrinter('SingleWindowInterface'));
 
+
 abstract class SingleWindowWidget extends StatefulWidget {
+  static BuildContext? currentWindowContext;
   final WindowSetting windowSetting;
   final bool? scrollable;
 
@@ -32,7 +31,11 @@ abstract class SingleWindowWidget extends StatefulWidget {
   ScrollController? get scrollController => windowSetting.scrollController;
 
   @protected
-  void initState() {}
+  void initState() {
+    if (this.scrollController == null)
+      windowSetting.scrollController = ScrollController();
+
+  }
 
   @protected
   void setState(VoidCallback fn) {
@@ -55,6 +58,7 @@ class SingleWindowWidgetState extends State<SingleWindowWidget> {
   void initState() {
     widget.initState();
     widget.windowSetting._setState = setState;
+    SingleWindowWidget.currentWindowContext = this.context;
     super.initState();
   }
 

@@ -37,15 +37,20 @@ class ActionButtonWidget extends StatelessWidget {
   ActionButtonWidget({required this.text, this.onPressed = _func});
 
   @override
-  Widget build(BuildContext context) => TextButton(
+  Widget build(BuildContext context) => MaterialButton(
         onPressed: onPressed,
         child: Padding(
             padding: const EdgeInsets.only(left: 10, right: 10),
-            child: Text(
-              text,
-              // overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.button,
-            )),
+            child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(5),
+                    color: Theme.of(context).appBarTheme.foregroundColor ??
+                        Colors.transparent),
+                child: Text(
+                  text,
+                  // overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.button,
+                ))),
       );
 }
 
@@ -64,18 +69,6 @@ final defaultAppBarBuilder =
                   )),
         elevation: 2,
         titleSpacing: 5.0,
-        // flexibleSpace: Padding(
-        //   padding: EdgeInsets.only(right: 15),
-        //   child: Align(
-        //       alignment: Alignment.centerRight,
-        //       child: IconButton(
-        //         iconSize: 35,
-        //         icon: Icon(Icons.add_alert_rounded),
-        //         onPressed: () {
-        //           UniversalRouter.changePath('about-me');
-        //         },
-        //       )),
-        // ),
         title: Text(
           S.of(context).title,
           style: Theme.of(context).textTheme.headline3,
@@ -91,7 +84,7 @@ final defaultAppBarBuilder =
                 icon: Icon(Icons.add_alert_rounded),
                 onPressed: () {
                   MultiLayeredApp.layerManagement.createContainer(
-                      options.openList,
+                      NotificationLayerOptions.openList,
                       layerName: 'NotificationLayer');
 
                   // UniversalRouter.changePath('about-me');

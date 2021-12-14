@@ -10,7 +10,7 @@ import 'package:uuid/uuid.dart';
 import '../framework.dart';
 import '../layer_management.dart';
 
-enum options { openList }
+enum NotificationLayerOptions { openList }
 
 class StateSetting {
   void Function(VoidCallback fn)? setState;
@@ -32,7 +32,7 @@ class NotificationLayer extends StatefulWidget with MultiLayer {
 
   @override
   createContainer(identity) {
-    if (identity is options) {
+    if (identity is NotificationLayerOptions) {
       stateSetting.openNotificationList != null
           ? stateSetting.openNotificationList!()
           : {};
