@@ -1,8 +1,7 @@
 import 'package:cullen_utilities/screen_size.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../multi_layered_app.dart';
 
@@ -39,7 +38,7 @@ final defaultFloatingActionButtons = (context,
                   mini: true,
                   onPressed: () {
                     switchContactButtonState();
-                    launch('mailto:contact@numflurry.ml');
+                    launchUrlString('mailto:contact@numflurry.ml');
                   },
                   child: contactButtonExtended
                       ? Icon(Icons.email)

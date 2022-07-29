@@ -25,7 +25,7 @@ class DefaultWindowFrameWidget extends WindowFrameWidget {
                 maximizeButton,
                 minimizeButton,
                 Text(
-                  singleWindowWidget.id,
+                  singleWindowWidget.windowId,
                   style: TextStyle(fontSize: 20),
                 ),
               ],

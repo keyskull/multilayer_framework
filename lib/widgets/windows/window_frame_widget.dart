@@ -8,7 +8,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:screenshot/screenshot.dart';
 
 import '../../layers/window_layer.dart';
-import 'single_window_interface.dart';
+import 'single_window_widget.dart';
 
 final logger = Logger(printer: CustomLogPrinter('WindowFrameWidget'));
 
@@ -60,12 +60,12 @@ class WindowFrameWidgetState extends State<WindowFrameWidget> {
   @override
   void initState() {
     this.singleWindowWidget = widget.singleWindowWidget;
-    this.id = singleWindowWidget.id;
+    this.id = singleWindowWidget.windowId;
     this.position = widget.position;
     this.inactiveWidgetBuilder = defaultInactiveWidgetBuilder;
     // widget.widgetSetting.refresh = refresh;
     windowsContainer.windowStates.add(this);
-    WidgetsBinding.instance!.endOfFrame.then(
+    WidgetsBinding.instance.endOfFrame.then(
       (_) => afterFirstLayout(context),
     );
     super.initState();

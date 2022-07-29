@@ -42,7 +42,7 @@ class DecorationLayerState extends State<DecorationLayer>
   void initState() {
     // decorations = decorations + [LicenseInformationBottomBar()];
 
-    WidgetsBinding.instance!.endOfFrame.then(
+    WidgetsBinding.instance.endOfFrame.then(
       (_) => afterFirstLayout(context),
     );
     isRoot = true;

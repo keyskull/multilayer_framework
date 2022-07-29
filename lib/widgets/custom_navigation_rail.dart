@@ -61,7 +61,7 @@ class CustomNavigationRailState extends State<CustomNavigationRail>
       vsync: this,
     );
     // controller.forward();
-    WidgetsBinding.instance!.endOfFrame.then(
+    WidgetsBinding.instance.endOfFrame.then(
       (_) => afterFirstLayout(context),
     );
     super.initState();

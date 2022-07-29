@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:localization/generated/l10n.dart';
 import 'package:multilayer_framework/multi_layered_app.dart';
 import 'package:universal_router/route.dart';
@@ -12,7 +11,7 @@ export 'layers/decoration_layer.dart';
 export 'layers/navigation_layer.dart';
 export 'layers/window_layer.dart';
 export 'properties/default_navigation_rail_buttons.dart';
-export 'widgets/windows/single_window_interface.dart';
+export 'widgets/windows/single_window_widget.dart';
 
 void _func() {}
 

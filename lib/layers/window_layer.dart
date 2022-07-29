@@ -9,7 +9,7 @@ import 'package:uuid/uuid.dart';
 
 import '../framework.dart';
 import '../layer_management.dart';
-import '../widgets/windows/single_window_interface.dart';
+import '../widgets/windows/single_window_widget.dart';
 
 final WindowsContainer windowsContainer = WindowsContainer();
 
